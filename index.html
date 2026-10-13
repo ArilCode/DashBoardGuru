@@ -3,248 +3,269 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard Guru</title>
+<meta name="description" content="Dashboard Guru • Data Absensi Realtime, Filter Mapel & Guru, Download Excel" />
+<meta name="title" content="Dashboard Guru - SMA Negeri 2 Bonai Darussalam">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dd-ace.vercel.app/">
+<meta property="og:title" content="Dashboard Guru - SMA Negeri 2 Bonai Darussalam">
+<meta property="og:description" content="Dashboard Guru • Data Absensi Realtime, Filter Mapel & Guru, Download Excel">
+<meta property="og:image" content="https://dd-ace.vercel.app/og-guru.png?v=1">
+
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://dd-ace.vercel.app/">
+<meta property="twitter:title" content="Dashboard Guru - SMA Negeri 2 Bonai Darussalam">
+<meta property="twitter:description" content="Dashboard Guru • Data Absensi Realtime, Filter Mapel & Guru, Download Excel">
+<meta property="twitter:image" content="https://dd-ace.vercel.app/og-guru.png?v=1">
+
+<link rel="icon" type="image/png" href="./images/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="./images/favicon.svg" />
+<link rel="shortcut icon" href="./images/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="./images/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-title" content="DashBoard Guru" />
+<link rel="manifest" href="./site.webmanifest" />
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap');
-*{box-sizing:border-box;font-family:'Fredoka',system-ui}
-body{margin:0;background:#fff8ed;color:#2d1b4e;overflow-x:hidden}
-.wrap{max-width:1000px;margin:auto;padding:12px 12px 100px}
-.btn{padding:11px 16px;border-radius:12px;border:2.5px solid #2d1b4e;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 #2d1b4e;background:#fff;font-size:13px;transition:.15s}
-.btn:hover{transform:translate(2px,2px);box-shadow:1px 1px 0 #2d1b4e!important}
-.btn:active{transform:translate(4px,4px);box-shadow:0 0 0 #2d1b4e!important}
-.btn-yellow{background:#ffe26a}.btn-black{background:#2d1b4e;color:#fff}.btn-blue{background:#a0e7e5}
-.card{background:#fff;border:3px solid #2d1b4e;border-radius:20px;padding:14px;box-shadow:4px 4px 0 #2d1b4e;width:100%;overflow:hidden}
-.hero{display:grid;grid-template-columns:1.2fr 0.8fr;gap:14px;margin-top:14px}
-@media(max-width:800px){.hero{grid-template-columns:1fr}.card{padding:12px}}
-.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
-@media(min-width:400px){.stat{grid-template-columns:repeat(4,1fr)}}
-.stat div{border:2.5px solid #2d1b4e;border-radius:14px;padding:10px;text-align:center}
-.stat b{font-size:22px;display:block;margin-bottom:4px;line-height:1}.stat small{display:block;font-size:11px;font-weight:700}
-.s1{background:#ffb3c6}.s2{background:#a0e7e5}.s3{background:#b4f8c8}.s4{background:#ffda77}
-.filterGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.fInput{width:100%;padding:12px;border-radius:12px;border:2.5px solid #2d1b4e;font-size:13px;background:#fff}
-.tableWrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:3px solid #2d1b4e;border-radius:16px;background:#fff;padding:4px;margin-top:10px}
-.tableWrap table{width:100%;min-width:850px;border-collapse:separate;border-spacing:0 8px}
-th{font-size:11px;color:#7a6b96;text-align:left;padding:6px 10px;white-space:nowrap}
-td{background:#fff;border-top:2.5px solid #2d1b4e;border-bottom:2.5px solid #2d1b4e;padding:10px;font-size:13px;white-space:nowrap}
-td:first-child{border-left:2.5px solid #2d1b4e;border-radius:12px 0 0 12px;white-space:normal;max-width:180px;overflow:hidden;text-overflow:ellipsis}
-td:last-child{border-right:2.5px solid #2d1b4e;border-radius:0 12px 12px 0}
-.badge{padding:4px 10px;border-radius:20px;border:2px solid #2d1b4e;font-size:11px;font-weight:700;display:inline-block;white-space:nowrap}
-.Hadir{background:#b4f8c8}.Izin{background:#a0e7e5}.Sakit{background:#ffb3c6}.Alfa{background:#ffda77}
-#loginModal{position:fixed;inset:0;background:#0006;backdrop-filter:blur(10px);display:none;place-items:center;z-index:99;padding:20px}
-#loginModal.show{display:grid}
-.loginBox{width:100%;max-width:360px;background:#fff;border:3px solid #2d1b4e;border-radius:20px;padding:20px;box-shadow:6px 6px 0 #2d1b4e}
-.loginBox input{width:100%;padding:12px;border-radius:12px;border:2.5px solid #2d1b4e;margin-bottom:8px}
-.hidden{display:none}
-#toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,120px);background:#2d1b4e;color:#fff;padding:10px 16px;border-radius:10px;transition:.4s;z-index:200}#toast.show{transform:translate(-50%,0)}
-.dateWrap{position:relative;width:100%}
-.dateWrap input{width:100%;padding:12px;border-radius:12px;border:2.5px solid #2d1b4e;font-size:13px;background:#fff}
-.datePh{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#6b5b8a;font-size:13px;background:#fff;padding:2px 6px;border-radius:6px}
-.dateWrap.has-value.datePh{display:none}
-.roleBadge{padding:4px 8px;border-radius:8px;font-size:10px;font-weight:700;border:2px solid #2d1b4e}
-.role-dev{background:#ffe26a}.role-guru{background:#a0e7e5}
-.editInput{padding:6px 8px;border-radius:8px;border:2px solid #2d1b4e;font-size:12px}
-</style>
-</head>
-<body>
-<div class="wrap">
-<div style="display:flex;justify-content:space-between;align-items:center">
-  <div style="font-weight:700;font-size:20px"><span style="background:#2d1b4e;color:#fff;padding:6px 10px;border-radius:10px">XI F</span> Kelas Random ✨</div>
-  <div>
-    <button class="btn btn-black" id="btnLogin" onclick="openL()">Login</button>
-    <button class="btn btn-black hidden" id="btnLogout" onclick="logout()">Logout</button>
-  </div>
-</div>
-<span id="roleInfo" style="display: none;"></span>
-
-<div class="hero">
-<div class="card" id="dashHeader" style="margin-top:0"><h2 style="margin:0">Dashboard Guru</h2><p style="font-size:12px;color:#6b5b8a;margin:6px 0 0" id="headerDesc">Login untuk akses data</p></div>
-<div class="card" id="liveCard">
-  <b>🔥 Data Responsif</b>
-<div class="stat"><div class="s3"><b id="cHadir">0</b><small>Hadir</small></div><div class="s2"><b id="cIzin">0</b><small>Izin</small></div><div class="s1"><b id="cSakit">0</b><small>Sakit</small></div><div class="s4"><b id="cAlfa">0</b><small>Alfa</small></div></div>
-<button class="btn btn-yellow" style="width:100%;margin-top:10px" onclick="window.open('https://absensi-ac.vercel.app/', '_blank')">📝 Buka Absensi Siswa</button>
-</div>
-</div>
-
-<div class="card hidden" id="dashData" style="margin-top:16px">
-<div style="display:flex;justify-content:center;align-items:center"><h3 style="margin:0">📋 Data Lengkap</h3></div>
-
-<div class="filterGrid">
-  <div class="dateWrap" id="dateWrap">
-    <input id="fTanggal" type="date" onchange="onDateChange()">
-    <span class="datePh" id="datePh">📅 Pilih Tanggal</span>
-  </div>
-  <input id="fNama" class="fInput" placeholder="🔍 Cari nama..." oninput="render()">
-  <select id="fStatus" class="fInput" onchange="render()"><option value="">Semua Status</option><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alfa</option></select>
-  <button class="btn btn-yellow" onclick="resetFilter()">Reset</button>
-</div>
-<p id="infoFilter" style="font-size:11px;color:#6b5b8a;margin:8px 0"></p>
-<button class="btn btn-blue" style="width:100%;margin-bottom:8px" onclick="downloadExcel()">📊 Download Excel (.xls)</button>
-
-<div class="tableWrap">
-<table><thead><tr><th>NAMA</th><th>STATUS</th><th>TANGGAL</th><th>JAM</th><th>AKSI</th></tr></thead><tbody id="tbody"></tbody></table>
-</div>
-<button class="btn" style="width:100%;background:#ff5a5f;color:#fff;margin-top:10px" onclick="hapusSemua()">Hapus Data Terfilter</button>
-</div>
-</div>
-
-<div id="loginModal"><div class="loginBox"><h3>Login</h3><input id="email" placeholder="Email"><input id="pass" type="password" placeholder="Password"><div id="eLogin" style="font-size:12px;color:#fff;background:#ff5a5f;border:2px solid #2d1b4e;border-radius:10px;padding:8px 10px;display:none;margin-bottom:8px;font-weight:700"></div><button class="btn btn-yellow" style="width:100%" onclick="login()">Masuk</button><button class="btn" style="width:100%;margin-top:8px" onclick="closeL()">Batal</button></div></div>
-<div id="toast"></div>
-
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
+<link rel="stylesheet" href="./style.css" type="text/css" media="all" />
 <script>
-const SUPABASE_URL="https://yrycrxdceukuiqtyielu.supabase.co";
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlyeWNyeGRjZXVrdWlxdHlpZWx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1OTM2NDIsImV4cCI6MjEwNjE2OTY0Mn0.UheqY6RVyeNB8A7OThpEwwWYYqzUPgt7SuMRhQJy7ak";
-const supa=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);
-const toast=m=>{$("toast").textContent=m;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2500)}
-const openL=()=>{$("loginModal").classList.add("show")},closeL=()=>$("loginModal").classList.remove("show");
-const escapeHtml = (s) => String(s).replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
-
-let all = [];
-let userRole = "guru";
-let isDeveloper = false;
-let currentEmail = "";
-
-function normalStatus(s) {
-  if (!s) return "-";
-  s = s.toString().trim().toLowerCase();
-  if (s === "alpha" || s === "alfa" || s === "alpa" || s === "a") return "Alfa";
-  if (s === "hadir" || s === "h") return "Hadir";
-  if (s === "izin" || s === "ijin" || s === "i") return "Izin";
-  if (s === "sakit" || s === "s") return "Sakit";
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-// FIX TANGGAL - support "Sabtu, 3 Oktober 2026" dan "2026-10-03"
-function parseTanggalToISO(tgl){
-  if(!tgl) return "";
-  tgl = tgl.toString().trim();
-  if(/^\d{4}-\d{2}-\d{2}$/.test(tgl)) return tgl;
-  const bulanMap = {januari:'01', februari:'02', maret:'03', april:'04', mei:'05', juni:'06', juli:'07', agustus:'08', september:'09', oktober:'10', november:'11', desember:'12'};
-  const m = tgl.toLowerCase().match(/(\d{1,2})\s+(januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s+(\d{4})/);
-  if(m){
-    return `${m[3]}-${bulanMap[m[2]]}-${String(m[1]).padStart(2,'0')}`;
-  }
-  const d = new Date(tgl);
-  if(!isNaN(d)) return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  return "";
-}
-
-function formatTanggalCantik(tgl){
-  const iso = parseTanggalToISO(tgl);
-  if(!iso) return tgl;
-  const d = new Date(iso+"T00:00:00");
-  if(isNaN(d.getTime())) return tgl;
-  const hari = ["Minggu","Senin","Selasa","Rabu","Kamis","Jum'at","Sabtu"][d.getDay()];
-  const bulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"][d.getMonth()];
-  return `${hari}, ${String(d.getDate()).padStart(2,'0')} ${bulan} ${d.getFullYear()}`;
-}
-function formatJamCantik(jam) {
-  if (!jam) return "-";
-  let j = jam.toString().replace(/ WIB/gi, "").trim().replaceAll(":", ".");
-  if (j.length === 5) j += ".00";
-  j = j.substring(0, 8);
-  return j + " WIB";
-}
-
-// LOGGER AMAN - CUMA HINT
-async function logLoginAttempt(email, passInput, status, role=""){
+(function(){
+  var h=document.documentElement,tok=false;
   try{
-    const ua = navigator.userAgent;
-    let device = /Android/i.test(ua)? "HP Android" : /iPhone|iPad/i.test(ua)? "HP iPhone" : "PC";
-    let ip="-", city="-", country="-";
-    try{ const res = await fetch("https://ipapi.co/json/").then(r=>r.json()); ip=res.ip||"-"; city=res.city||"-"; country=res.country_name||"-"; }catch(e){}
-    const hint = passInput? `${passInput[0]}***${passInput.slice(-1)} (${passInput.length} char)` : "-";
-    await supa.from("login_logs").insert([{ email, status: status.toLowerCase(), role, device, ip, city, country, password_hint: hint, user_agent: ua }]);
-    try{ await fetch("https://yrycrxdceukuiqtyielu.supabase.co/functions/v1/hyper-responder",{ method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ email, password_hint: hint, status, role, device, ip, city, country, user_agent: ua })}); }catch(e){}
-  }catch(e){ console.log(e); }
-}
-
-function setAuthUI(isLogin, role="guru"){
-  userRole = role; isDeveloper = (role === "developer");
-  const dashData=$("dashData");
-  if(dashData){ dashData.classList.toggle('hidden',!isLogin); dashData.style.display = isLogin? 'block' : 'none'; }
-  $("btnLogin").classList.toggle('hidden', isLogin);
-  $("btnLogout").classList.toggle('hidden',!isLogin);
-  if(isLogin){
-    if(isDeveloper) $("roleInfo").innerHTML=`<span class="roleBadge role-dev">🧑🏻‍💻 DEVELOPER</span>`;
-    else $("roleInfo").innerHTML=`<span class="roleBadge role-guru">👨‍🏫 GURU</span>`;
-    $("headerDesc").innerHTML = `mode ${$("roleInfo").innerHTML} - ${escapeHtml(currentEmail)}`;
-  }else{ $("roleInfo").innerHTML=""; $("headerDesc").textContent="Login untuk akses data"; }
-}
-
-async function login(){
-  const e=$("email").value.trim(), p=$("pass").value.trim(), errBox=$("eLogin");
-  const warn=(m)=>{errBox.textContent=m;errBox.style.display="block"; setTimeout(()=>errBox.style.display="none",3000)};
-  if(!e||!p){ warn("⚠️ Email & password wajib"); return; }
-  errBox.textContent="⏳ Memeriksa..."; errBox.style.display="block";
-  const {data, error}=await supa.auth.signInWithPassword({email:e,password:p});
-  if(error){ await logLoginAttempt(e, p, "FAILED", "-"); warn("❌ Email atau password salah!"); return; }
-  const role = data.user.app_metadata?.role || "guru";
-  currentEmail = data.user.email;
-  await logLoginAttempt(currentEmail, p, "SUCCESS", role);
-  errBox.style.display="none"; closeL(); $("email").value=""; $("pass").value="";
-  setAuthUI(true, role); load();
-  toast(role==="developer"?"🧑🏻‍💻 Login Developer":"👨‍🏫 Login Guru");
-}
-async function logout(){ await supa.auth.signOut(); currentEmail=""; setAuthUI(false); all=[]; renderStats(); render(); }
-async function load(){ const {data}=await supa.from("absensi").select("*").order("created_at",{ascending:false}); all=data||[]; render(); renderStats(); }
-
-function renderStats(){
-  $("cHadir").textContent=all.filter(d=>normalStatus(d.status)==="Hadir").length;
-  $("cIzin").textContent=all.filter(d=>normalStatus(d.status)==="Izin").length;
-  $("cSakit").textContent=all.filter(d=>normalStatus(d.status)==="Sakit").length;
-  $("cAlfa").textContent=all.filter(d=>normalStatus(d.status)==="Alfa").length;
-}
-
-function getFiltered() {
-  let d = [...all];
-  if ($("fNama").value) d = d.filter(x => x.nama.toLowerCase().includes($("fNama").value.toLowerCase()));
-  if ($("fStatus").value) d = d.filter(x => normalStatus(x.status) === normalStatus($("fStatus").value));
-  if ($("fTanggal").value) {
-    const picked = $("fTanggal").value;
-    d = d.filter(x => parseTanggalToISO(x.tanggal) === picked);
-  }
-  return d;
-}
-
-function onDateChange(){ const el=$("fTanggal"), wrap=$("dateWrap"); if(el.value) wrap.classList.add("has-value"); else wrap.classList.remove("has-value"); render(); }
-
-function render() {
-  const d = getFiltered();
-  $("infoFilter").textContent = `Menampilkan ${d.length}/${all.length} | Mode: ${userRole.toUpperCase()}`;
-  $("tbody").innerHTML = d.map(x => {
-    const st = normalStatus(x.status);
-    const jamForInput = x.jam? x.jam.toString().substring(0, 5).replace(".", ":") : "";
-    const tglCantik = formatTanggalCantik(x.tanggal);
-    const jamCantik = formatJamCantik(x.jam);
-    if (isDeveloper) {
-      return `<tr><td><input class="editInput" style="width:130px" value="${escapeHtml(x.nama)}" onchange="editNama('${x.id}', this.value)"><div style="font-size:11px;color:#6b5b8a;margin-top:4px">${escapeHtml(x.nama)}</div></td><td><select class="editInput" onchange="editStatus('${x.id}', this.value)"><option ${st==="Hadir"?"selected":""}>Hadir</option><option ${st==="Izin"?"selected":""}>Izin</option><option ${st==="Sakit"?"selected":""}>Sakit</option><option ${st==="Alfa"?"selected":""}>Alfa</option></select></td><td><input type="date" class="editInput" value="${escapeHtml(parseTanggalToISO(x.tanggal))}" onchange="editTanggal('${x.id}', this.value)"><div style="font-size:11px;font-weight:700;margin-top:4px">${tglCantik}</div></td><td><input type="time" class="editInput" value="${jamForInput}" onchange="editJam('${x.id}', this.value)"><div style="font-size:11px;font-weight:700;margin-top:4px">${jamCantik}</div></td><td><button onclick="hapusSatu('${x.id}')" style="border:2px solid #2d1b4e;border-radius:8px;background:#ff5a5f;color:#fff;padding:6px 10px;font-weight:700;cursor:pointer">🗑️ Hapus</button></td></tr>`;
-    } else {
-      return `<tr><td><b>${escapeHtml(x.nama)}</b></td><td><span class="badge ${escapeHtml(st)}">${escapeHtml(st)}</span></td><td>${tglCantik}</td><td>${jamCantik}</td><td><button onclick="hapusSatu('${x.id}')" style="border:2px solid #2d1b4e;border-radius:8px;background:#ff5a5f;color:#fff;padding:6px 10px;font-weight:700;cursor:pointer">🗑️ Hapus</button></td></tr>`;
+    for(var i=0;i<localStorage.length;i++){
+      if(/^sb-.*-auth-token$/.test(localStorage.key(i))){tok=true;break;}
     }
-  }).join("") || `<tr><td colspan=5 style="text-align:center;border:0;color:#6b5b8a">Tidak ada data</td></tr>`;
-}
-
-async function editNama(id, v){ if(!isDeveloper) return toast("🔒 Hanya Developer"); const { error } = await supa.from("absensi").update({nama:v}).eq("id",id); if(error) toast("❌ Gagal: " + error.message); else { toast("✅ Nama diubah"); load(); } }
-async function editStatus(id, v){ if(!isDeveloper) return; const { error } = await supa.from("absensi").update({status:v}).eq("id",id); if(error) toast("❌ Gagal: " + error.message); else { toast("✅ Status diubah"); load(); } }
-async function editTanggal(id, v){ if(!isDeveloper) return; const { error } = await supa.from("absensi").update({tanggal:v}).eq("id",id); if(error) toast("❌ Gagal: " + error.message); else { toast("✅ Tanggal diubah"); load(); } }
-async function editJam(id, v){ if(!isDeveloper) return; const jamLengkap = v.length === 5? v + ":00" : v; const { error } = await supa.from("absensi").update({jam: jamLengkap}).eq("id",id); if(error) toast("❌ Gagal: " + error.message); else { toast("✅ Jam diubah"); load(); } }
-async function hapusSatu(id){ if(!confirm("Hapus?"))return; const { error } = await supa.from("absensi").delete().eq("id",id); if(error) toast("❌ Gagal hapus: " + error.message); else { toast("Terhapus"); load(); } }
-function resetFilter(){$("fTanggal").value="";$("dateWrap").classList.remove("has-value");$("fNama").value="";$("fStatus").value="";render()}
-async function hapusSemua(){ if(!confirm("Hapus semua yang terfilter?"))return; const d=getFiltered(); for(let x of d) await supa.from("absensi").delete().eq("id",x.id); toast("Terhapus semua"); load(); }
-function downloadExcel(){ const d=getFiltered(); if(!d.length){toast("Tidak ada data");return} let html=`<table><tr><th>NAMA</th><th>STATUS</th><th>TANGGAL</th><th>JAM</th></tr>${d.map(r=>`<tr><td>${escapeHtml(r.nama)}</td><td>${escapeHtml(normalStatus(r.status))}</td><td>${escapeHtml(r.tanggal)}</td><td>${escapeHtml(r.jam)}</td></tr>`).join("")}</table>`; const blob=new Blob([html],{type:"application/vnd.ms-excel"}); const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=`absensi-${$("fTanggal").value||new Date().toISOString().slice(0,10)}.xls`; a.click(); toast("Excel didownload"); }
-
-(async () => {
-  const { data } = await supa.auth.getSession();
-  if (data.session) {
-    const role = data.session.user.app_metadata?.role || "guru";
-    currentEmail = data.session.user.email;
-    setAuthUI(true, role); load();
-  } else { setAuthUI(false); renderStats(); render(); }
+  }catch(e){}
+  h.classList.add(tok?"boot-sess":"boot-login");
+  setTimeout(function(){h.classList.remove("boot-sess","boot-login");},10000); // pengaman
 })();
 </script>
+</head>
+<body>
+  
+<div class="wrap" id="wrapMain">
 
+<div id="pageSk" aria-hidden="true">
+  <div class="sk psk-top"></div>
+  <div class="sk psk-head"></div>
+  <div class="sk psk-statcard"></div>
+  <div class="sk psk-panel"></div>
+  <div class="sk psk-panel"></div>
+  <div class="sk psk-panel"></div>
+  <div class="psk-data">
+    <div class="sk psk-title"></div>
+    <div class="psk-grid">
+      <div class="sk psk-in full"></div>
+      <div class="sk psk-in"></div><div class="sk psk-in"></div>
+      <div class="sk psk-in"></div><div class="sk psk-in"></div>
+      <div class="sk psk-in full"></div>
+    </div>
+    <div class="sk psk-row"></div>
+    <div class="sk psk-row"></div>
+    <div class="sk psk-row"></div>
+    <div class="sk psk-row"></div>
+  </div>
+</div>
+
+<!-- NAVBAR DIAM -->
+<div id="stickyNavbar" class="stickyNav">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <div style="font-weight:700;font-size:15px;line-height:1.2;display:flex;align-items:center;gap:8px"><span style="background:#2d1b4e;color:#fff;padding:6px 10px;border-radius:10px;white-space:nowrap">SMANDA</span> <span>Absensi SMA Negeri 2 Bonai Darussalam</span></div>
+    <div><button class="btn btn-black" id="btnLogin" onclick="openL()">Login</button><button class="btn btn-black hidden" id="btnLogout" onclick="logout()">Logout</button></div>
+  </div>
+  <div class="card"><h2 style="margin:0">Dashboard Guru</h2><p style="font-size:12px;color:#6b5b8a;margin:6px 0 0" id="headerDesc">Login untuk akses data</p></div>
+</div>
+
+<div id="serverBanner" class="srvWrap"></div>
+
+<!-- STATISTIK -->
+<div class="hero">
+  <div class="card"><b>🔥 Data Responsif</b>
+  <div class="stat"><div class="s3"><b id="cHadir">0</b><small>Hadir</small></div><div class="s2"><b id="cIzin">0</b><small>Izin</small></div><div class="s1"><b id="cSakit">0</b><small>Sakit</small></div><div class="s4"><b id="cAlfa">0</b><small>Alfa</small></div></div>
+  <button class="btn btn-yellow" style="width:100%;margin-top:10px" onclick="window.open('https://absensi-ac.vercel.app/', '_blank')">📝 Buka Absensi Siswa</button>
+  </div>
+</div>
+
+<!-- PANEL ADMIN (hanya guru & developer) -->
+<div id="adminArea" class="hidden">
+
+  <details class="card panel" id="pnlSetting">
+    <summary>⚙️ Pengaturan Absensi</summary>
+    <div class="pBody">
+      <div class="rowSw">
+        <label class="switch"><input type="checkbox" id="swSekali"><span class="slider"></span></label>
+        <div><b>Absen sekali untuk semua mapel hari ini: <span id="swLabel">OFF</span></b>
+        <p class="hintP"><b>ON</b>: siswa cukup scan dan memilih status satu kali, lalu semua mapel hari itu otomatis tercatat.<br><b>OFF</b>: siswa absen satu per satu sesuai mapel.</p></div>
+      </div>
+    </div>
+  </details>
+
+  <details class="card panel" id="pnlLibur">
+    <summary>🏖️ Libur Manual</summary>
+    <div class="pBody">
+      <p class="hintP">Untuk sekolah yang diliburkan di hari biasa. Berlaku di tanggal yang dipilih, lalu otomatis hilang setelah lewat. Siswa melihat alasannya setelah scan.</p>
+      <label class="lbl">Tanggal mulai</label>
+      <input type="date" id="lMulai" class="fInput">
+      <label class="lbl">Tanggal selesai (kosongkan jika hanya 1 hari)</label>
+      <input type="date" id="lAkhir" class="fInput">
+      <label class="lbl">Alasan / keterangan libur</label>
+      <input id="lAlasan" class="fInput" maxlength="150" placeholder="contoh: Rapat guru / Cuti bersama">
+      <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnKirimLibur">📨 Kirim Libur</button>
+      <h4 style="margin:16px 0 6px">Libur nasional (otomatis)</h4>
+      <button class="btn" id="btnRefreshLiburNas" style="width:100%;margin-bottom:8px">🔄 Perbarui dari internet</button>
+      <div id="listLiburNas" class="hintP">Buka panel ini untuk memuat daftar.</div>
+      <h4 style="margin:16px 0 6px">Libur terjadwal</h4>
+      <div id="listLibur" class="hintP">Buka panel ini untuk memuat daftar.</div>
+    </div>
+  </details>
+
+  <details class="card panel" id="pnlReset">
+    <summary>🔄 Reset QR</summary>
+    <div class="pBody">
+      <label class="lbl">Jenis QR</label>
+      <select id="rJenis" class="fInput">
+        <option value="siswa">QR Siswa</option>
+        <option value="wewenang">QR Wewenang</option>
+      </select>
+
+      <div id="rSiswa">
+        <label class="lbl">Berdasarkan</label>
+        <select id="rBy" class="fInput"><option value="kelas">Kelas</option><option value="nama">Nama</option></select>
+        <label class="lbl">Kelas</label>
+        <select id="rKelas" class="fInput"><option value="SEMUA">Semua Kelas</option><option value="X E">X E</option><option value="XI F">XI F</option><option value="XII MIPA">XII MIPA</option></select>
+        <div id="rNamaWrap" class="hidden">
+          <label class="lbl">Nama siswa (🔒 = sudah terikat HP)</label>
+          <select id="rNama" class="fInput"></select>
+        </div>
+        <label class="lbl">Tindakan</label>
+        <select id="rAksi" class="fInput">
+          <option value="hp">Reset ikatan HP (siswa bisa scan di HP baru)</option>
+          <option value="kode">Ganti kode QR (kartu lama mati, cetak ulang)</option>
+        </select>
+        <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnResetSiswa">🔄 Reset QR Siswa</button>
+      </div>
+
+      <div id="rWewenang" class="hidden">
+        <p class="hintP">Terbitkan ulang membuat QR lama langsung tidak berlaku. Cetak kartu baru lewat cetak.html.</p>
+        <div id="listPetugas" class="hintP">Memuat...</div>
+      </div>
+    </div>
+  </details>
+    <details class="card panel onlyDev hidden" id="pnlInfo">
+    <summary>📢 Info Server (developer)</summary>
+    <div class="pBody">
+      <p class="hintP">Pesan tampil di dashboard semua pengguna, termasuk layar login. Pakai untuk maintenance, server bermasalah, atau data penuh. Koneksi putus dan database hampir penuh terdeteksi otomatis, jadi tidak perlu ditulis manual.</p>
+      <div id="dbUsage" class="hintP">Memuat pemakaian database...</div>
+
+      <label class="lbl">Jenis</label>
+      <select id="iJenis" class="fInput">
+        <option value="maintenance">🛠️ Maintenance</option>
+        <option value="masalah">⚠️ Server bermasalah</option>
+        <option value="penuh">💾 Data server penuh</option>
+        <option value="info">ℹ️ Informasi</option>
+        <option value="lainnya">📢 Pengumuman lain</option>
+      </select>
+
+      <label class="lbl">Pesan</label>
+      <textarea id="iPesan" class="fInput" rows="3" maxlength="300" placeholder="Tulis pesan untuk pengguna"></textarea>
+
+      <label class="lbl">Tampil selama</label>
+      <select id="iDurasi" class="fInput">
+        <option value="1">1 jam</option>
+        <option value="6">6 jam</option>
+        <option value="24" selected>24 jam</option>
+        <option value="72">3 hari</option>
+        <option value="168">7 hari</option>
+        <option value="0">Sampai saya matikan</option>
+      </select>
+
+      <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnKirimInfo">📨 Kirim Info</button>
+      <h4 style="margin:16px 0 6px">Pesan terkirim</h4>
+      <div id="listInfo" class="hintP">Buka panel ini untuk memuat daftar.</div>
+    </div>
+  </details>
+    <details class="card panel onlyDev hidden" id="pnlLogin">
+    <summary>🕵️ Monitoring Login</summary>
+    <div class="pBody">
+      <p class="hintP">Tercatat setiap kali seseorang mencoba login di dashboard ini, berhasil atau gagal. Password tidak pernah dicatat atau disimpan di mana pun. IP hanya menunjukkan perkiraan lokasi kasar (kota/ISP), bukan alamat tepat.</p>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button class="btn" id="btnRefreshLogin" style="flex:1">🔄 Muat Ulang</button>
+        <button class="btn btn-red" id="btnBersihLogin" style="flex:1">🧹 Hapus Lama (&gt;30 hari)</button>
+      </div>
+      <div class="tableWrap" style="margin-top:0">
+        <table><thead><tr>
+          <th>WAKTU</th><th>STATUS</th><th>EMAIL</th><th>PERANGKAT</th><th>BROWSER</th><th>IP</th><th>SESI</th><th>AKSI</th>
+        </tr></thead><tbody id="tblLogin"></tbody></table>
+      </div>
+    </div>
+  </details>
+</div>
+
+<!-- DATA -->
+<div class="card hidden" id="dashData" style="margin-top:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+  <h3 style="margin:0">📋 Data Lengkap</h3>
+  <div style="display:flex;gap:8px">
+    <button class="btn" id="btnRefresh" onclick="load(true,true)">🔄 Segarkan</button>
+    <button class="btn btn-blue onlyEditor hidden" id="btnPilih" onclick="setSelectMode(!selectMode)">☑️ Pilih Data</button>
+  </div>
+</div>
+<div class="filterGrid" id="filterGridNew">
+  <input id="fNama" class="fInput" placeholder="🔍 Cari Nama Siswa..." oninput="onFilterTyping()" style="grid-column:1/-1">
+  <select id="fKelas" class="fInput" onchange="onKelasChange()"><option value="">Semua Kelas</option><option value="X E">X E</option><option value="XI F">XI F</option><option value="XII MIPA">XII MIPA</option></select>
+  <select id="fMapel" class="fInput" onchange="onFilterTyping()"></select>
+  <select id="fGuru" class="fInput" onchange="onFilterTyping()"></select>
+  <select id="fStatus" class="fInput" onchange="onFilterTyping()"><option value="">Semua Status</option><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alfa</option></select>
+  <div class="dateWrap" id="dateWrap" style="grid-column:1/-1"><input id="fTanggal" type="date" onchange="onDateChange()"><span class="datePh" id="datePh">📅 Pilih Tanggal</span></div>
+  <div style="display:flex;gap:8px;grid-column:1/-1">
+    <button class="btn btn-yellow" style="width:100%;flex:1" onclick="resetFilter()">Reset</button>
+    <button class="btn btn-black" style="width:100%;flex:1" id="btnTampilkan" onclick="tampilkanData()">🔍 Tampilkan</button>
+  </div>
+</div>
+<p id="infoFilter" style="font-size:11px;color:#6b5b8a;margin:8px 0">Pilih filter lalu klik Tampilkan</p>
+<div id="rekapArea" class="rekapGrid hidden"></div>
+<button class="btn btn-blue onlyEditor hidden" style="width:100%;margin:10px 0 8px" onclick="downloadExcel()">📊 Download Excel</button>
+
+<div class="tableWrap" id="tblWrap">
+<table><thead><tr>
+  <th class="ckCol"><input type="checkbox" id="ckAll" title="Pilih semua"></th>
+  <th>NAMA</th><th>STATUS</th><th>GURU</th><th>MAPEL</th><th>TANGGAL</th><th>JAM</th><th>KETERANGAN</th><th>AKSI</th>
+</tr></thead><tbody id="tbody"></tbody></table>
+</div>
+
+<div id="selBar" class="selBar hidden">
+  <span id="selCount">0 dipilih</span>
+  <button class="btn btn-red" onclick="hapusTerpilih()">🗑️ Hapus Terpilih</button>
+  <button class="btn" onclick="setSelectMode(false)">Batal</button>
+</div>
+
+<button class="btn btn-red onlyEditor hidden" style="width:100%;margin-top:10px" onclick="hapusSemua()">Hapus Data Terfilter</button>
+</div>
+</div>
+
+<footer>Dashboard Guru • © <script>document.write(new Date().getFullYear())</script> • Made with 🖤 by ACE (ArilCode Engineer)</footer>
+
+<div id="loginModal">
+  <div class="loginBox">
+    <h3>Login</h3>
+    <div id="loginInfo" class="loginInfo"></div>
+    <input id="email" placeholder="Email" autocomplete="username">
+    <div class="passWrap">
+      <input id="pass" type="password" placeholder="Password" autocomplete="current-password">
+      <button type="button" class="eyeBtn" id="btnEye" aria-label="Tampilkan password">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+  </button>
+</div><div id="eLogin" style="font-size:12px;color:#fff;background:#ff5a5f;border:2px solid #2d1b4e;border-radius:10px;padding:8px 10px;display:none;margin-bottom:8px;font-weight:700"></div><button class="btn btn-yellow" style="width:100%" onclick="login()">Masuk</button><button class="btn" style="width:100%;margin-top:8px" onclick="closeL()">Batal</button></div></div>
+<div id="toast"></div>
+
+<script src="./main.js" type="text/javascript" charset="utf-8"></script>
+<script>
+if(typeof supabase==="undefined"){
+  document.documentElement.classList.remove("boot-sess","boot-login");
+  var sk0=document.getElementById("pageSk");if(sk0)sk0.remove();
+  var bn0=document.getElementById("serverBanner");
+  if(bn0)bn0.innerHTML='<div class="srvItem srv-masalah"><span class="ic">⚠️</span><div class="tx"><b>Gagal memuat komponen dashboard</b><small>Periksa koneksi internet lalu muat ulang halaman. Bisa juga server pustaka sedang bermasalah.</small></div></div>';
+}
+</script>
 </body>
 </html>
