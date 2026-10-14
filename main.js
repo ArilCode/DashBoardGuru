@@ -539,21 +539,39 @@ async function muatLiburNasional(){
   if(!data||!data.length){box.textContent="Belum ada data (coba 'Perbarui dari internet').";return;}
   box.innerHTML=data.map(l=>`<div class="item"><div>${formatTanggalCantik(l.tgl)}<br><b>${escapeHtml(l.nama)}</b></div></div>`).join("");
 }
+const DOMAIN_LIBUR = ["https://api-harilibur.netlify.app", "https://api-harilibur.pages.dev", "https://api-harilibur.vercel.app"];
+
+async function ambilLiburTahun(th) {
+  let errTerakhir = null;
+  for (const dom of DOMAIN_LIBUR) {
+    try {
+      const r = await fetch(`${dom}/api?year=${th}`, { cache: "no-store" });
+      if (!r.ok) { errTerakhir = new Error(`${dom} menolak (kode ${r.status})`); continue; }
+      const j = await r.json().catch(() => null);
+      if (!Array.isArray(j)) { errTerakhir = new Error(`${dom} mengirim format tak dikenal`); continue; }
+      return j; // berhasil, langsung pakai
+    } catch (netErr) {
+      errTerakhir = new Error(`${dom} tidak bisa dihubungi`);
+    }
+  }
+  throw errTerakhir || new Error(`Semua sumber API libur gagal untuk tahun ${th}`);
+}
+
 $("btnRefreshLiburNas").addEventListener("click", async () => {
   $("btnRefreshLiburNas").disabled = true;
   try {
     const tahun = new Date().getFullYear();
-    const hasil = await Promise.all([tahun, tahun + 1].map(async th => {
-      const r = await fetch(`https://api-harilibur.vercel.app/api?year=${th}`);
-      if (!r.ok) throw new Error("Gagal mengambil data tahun " + th);
-      const j = await r.json();
+    let total = 0;
+    for (const th of [tahun, tahun + 1]) {
+      const j = await ambilLiburTahun(th);
       const { data, error } = await supa.rpc("simpan_libur_nasional", { p_tahun: th, p_data: j });
-      if (error) throw new Error(error.message);
-      return data;
-    }));
-    toast(`✅ ${hasil.reduce((a,b)=>a+b,0)} hari libur diperbarui`);
+      if (error) throw new Error("Supabase menolak: " + error.message);
+      total += data || 0;
+    }
+    toast(`✅ ${total} hari libur diperbarui`);
   } catch (e) {
-    toast("❌ " + e.message, 4000);
+    toast("❌ " + e.message, 6000);
+    console.error(e);
   } finally {
     $("btnRefreshLiburNas").disabled = false;
     muatLiburNasional();
