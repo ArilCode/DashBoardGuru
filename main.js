@@ -539,12 +539,25 @@ async function muatLiburNasional(){
   if(!data||!data.length){box.textContent="Belum ada data (coba 'Perbarui dari internet').";return;}
   box.innerHTML=data.map(l=>`<div class="item"><div>${formatTanggalCantik(l.tgl)}<br><b>${escapeHtml(l.nama)}</b></div></div>`).join("");
 }
-$("btnRefreshLiburNas").addEventListener("click",async()=>{
-  $("btnRefreshLiburNas").disabled=true;
-  const {data,error}=await supa.rpc("refresh_libur_nasional");
-  $("btnRefreshLiburNas").disabled=false;
-  if(error)return toast("❌ "+error.message,4000);
-  toast(`✅ ${data} hari libur diperbarui`);muatLiburNasional();
+$("btnRefreshLiburNas").addEventListener("click", async () => {
+  $("btnRefreshLiburNas").disabled = true;
+  try {
+    const tahun = new Date().getFullYear();
+    const hasil = await Promise.all([tahun, tahun + 1].map(async th => {
+      const r = await fetch(`https://api-harilibur.vercel.app/api?year=${th}`);
+      if (!r.ok) throw new Error("Gagal mengambil data tahun " + th);
+      const j = await r.json();
+      const { data, error } = await supa.rpc("simpan_libur_nasional", { p_tahun: th, p_data: j });
+      if (error) throw new Error(error.message);
+      return data;
+    }));
+    toast(`✅ ${hasil.reduce((a,b)=>a+b,0)} hari libur diperbarui`);
+  } catch (e) {
+    toast("❌ " + e.message, 4000);
+  } finally {
+    $("btnRefreshLiburNas").disabled = false;
+    muatLiburNasional();
+  }
 });
 
 $("btnKirimLibur").addEventListener("click",async()=>{
