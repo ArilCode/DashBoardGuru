@@ -206,3 +206,12 @@ html.boot-login .passWrap>*{visibility:hidden}
 .loginRowGagal td{background:#ffe5e5!important}
 .lokasiTxt{font-size:11px;color:#6b5b8a}
 .uaToggle{font-size:11px;color:#2563eb;cursor:pointer;text-decoration:underline;background:none;border:0;padding:0}
+
+.contact a {
+  color: #f59e0b;
+  text-decoration: none;
+}
+
+.contact a:hover {
+  text-decoration: underline;
+}
