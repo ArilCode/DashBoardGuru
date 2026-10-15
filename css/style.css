@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap');
+
+*{box-sizing:border-box;font-family:'Fredoka',system-ui}
+body{margin:0;background:#fff8ed;color:#2d1b4e;overflow-x:hidden}
+.wrap{max-width:1200px;margin:0 auto;width:100%;padding:12px 12px 0}
+.hidden{display:none!important}
+
+/* tombol */
+.btn{padding:11px 16px;border-radius:12px;border:2.5px solid #2d1b4e;font-weight:700;cursor:pointer;box-shadow:3px 3px 0 #2d1b4e;background:#fff;font-size:13px;color:#2d1b4e;transition:all .18s cubic-bezier(.2,.8,.2,1);will-change:transform,box-shadow}
+.btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:5px 7px 0 #2d1b4e;filter:brightness(1.05)}
+.btn:active{transform:translateY(1px) scale(.97);box-shadow:2px 2px 0 #2d1b4e}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn-yellow{background:#ffe26a}.btn-yellow:hover{background:#ffe97a}
+.btn-black{background:#2d1b4e;color:#fff}.btn-black:hover{background:#3d2a6a}
+.btn-blue{background:#a0e7e5}
+.btn-red{background:#ff5a5f;color:#fff}
+
+/* navbar */
+.stickyNav{position:sticky;top:0;z-index:50;background:rgba(0,0,0,0);backdrop-filter:blur(14px) saturate(180%);-webkit-backdrop-filter:blur(14px) saturate(180%);padding:12px;margin:-12px -12px 12px -12px;border-bottom:2px solid rgba(0,0,0,0);transition:all .3s ease}
+.stickyNav.scrolled{background:rgba(255,248,237,.6)}
+.stickyNav .card{margin-top:10px;margin-bottom:0;background:rgba(0,0,0,0);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+body.login-open .stickyNav{opacity:0!important;pointer-events:none!important;transform:translateY(-100%)!important;visibility:hidden!important}
+@media(min-width:900px){.stickyNav{padding:14px 20px;margin:-12px -20px 16px -20px}}
+
+/* kartu & statistik */
+.card{background:#fff;border:3px solid #2d1b4e;border-radius:20px;padding:14px;box-shadow:4px 4px 0 #2d1b4e;width:100%;overflow:visible}
+.hero{display:block;width:100%;margin-top:14px}
+.stat{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0;width:100%}
+.stat div{border:2.5px solid #2d1b4e;border-radius:14px;padding:10px;text-align:center}
+.stat b{font-size:22px;display:block}.stat small{font-size:11px;font-weight:700}
+.s1{background:#ffb3c6}.s2{background:#a0e7e5}.s3{background:#b4f8c8}.s4{background:#ffda77}
+
+/* filter */
+#filterGridNew{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+@media(max-width:400px){#filterGridNew{grid-template-columns:1fr}}
+.fInput{width:100%;padding:12px;border-radius:12px;border:2.5px solid #2d1b4e;font-size:13px;background:#fff;transition:.15s}
+.fInput:disabled{background:#eee;color:#999}
+.fInput:hover,.dateWrap input:hover{transform:translateY(-1px);box-shadow:2px 3px 0 #2d1b4e}
+.dateWrap{position:relative;width:100%}
+.dateWrap input{width:100%;padding:12px;border-radius:12px;border:2.5px solid #2d1b4e;font-size:13px;background:#fff;transition:.15s}
+.datePh{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;color:#6b5b8a;font-size:13px;background:#fff;padding:2px 6px;border-radius:6px}
+.dateWrap.has-value .datePh{display:none}
+
+/* tabel */
+.tableWrap{width:100%;overflow-x:auto;border:3px solid #2d1b4e;border-radius:16px;background:#fff;padding:4px;margin-top:10px}
+.tableWrap table{width:100%;min-width:1250px;border-collapse:separate;border-spacing:0 8px}
+th{font-size:11px;color:#7a6b96;text-align:left;padding:6px 10px}
+td{background:#fff;border-top:2.5px solid #2d1b4e;border-bottom:2.5px solid #2d1b4e;padding:10px;font-size:13px;white-space:nowrap}
+td:first-child{border-left:2.5px solid #2d1b4e;border-radius:12px 0 0 12px}
+td:last-child{border-right:2.5px solid #2d1b4e;border-radius:0 12px 12px 0}
+td.namaCell{white-space:normal;max-width:170px}
+td.ketCell{white-space:normal;min-width:170px;max-width:260px;font-size:12px}
+.tableWrap tbody tr{-webkit-touch-callout:none}
+.tableWrap:not(.selecting) .ckCol{display:none}
+.ckCol{width:34px;text-align:center}
+.ckCol input,#ckAll{width:20px;height:20px;accent-color:#2d1b4e;cursor:pointer}
+tr.rowSel td{background:#fff3b0}
+.badge{padding:4px 10px;border-radius:20px;border:2px solid #2d1b4e;font-size:11px;font-weight:700;display:inline-block}
+.Hadir{background:#b4f8c8}.Izin{background:#a0e7e5}.Sakit{background:#ffb3c6}.Alfa{background:#ffda77}
+.badge-mapel{background:#d8b4fe}.badge-guru{background:#ff8a65}
+.editInput{padding:6px 8px;border-radius:8px;border:2px solid #2d1b4e;font-size:11px;width:120px;max-width:120px}
+@media(max-width:600px){.editInput{width:95px;max-width:95px;font-size:10px}}
+.btnDel{border:2px solid #2d1b4e;border-radius:8px;background:#ff5a5f;color:#fff;padding:6px 10px;font-weight:700;cursor:pointer}
+
+/* bar pilih */
+.selBar{position:sticky;bottom:12px;z-index:30;display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#ffe26a;border:3px solid #2d1b4e;border-radius:16px;padding:10px 12px;margin-top:10px;box-shadow:4px 4px 0 #2d1b4e}
+.selBar span{font-weight:700;flex:1;min-width:90px}
+
+/* login */
+#loginModal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;z-index:99999;padding:20px}
+#loginModal.show{display:grid}
+.loginBox{width:100%;max-width:360px;background:#fff;border:3px solid #2d1b4e;border-radius:20px;padding:20px;box-shadow:6px 6px 0 #2d1b4e}
+.loginBox input{width:100%;padding:12px;border-radius:12px;border:2.5px solid #2d1b4e;margin-bottom:8px}
+
+/* toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(150px);background:#2d1b4e;color:#fff;padding:12px 18px;border-radius:14px;border:2.5px solid #2d1b4e;font-weight:700;font-size:12px;opacity:0;pointer-events:none;transition:all .35s ease;z-index:9999;max-width:90vw;text-align:center;box-shadow:4px 4px 0 #2d1b4e}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* role */
+.roleBadge{padding:4px 8px;border-radius:8px;font-size:10px;font-weight:700;border:2px solid #2d1b4e}
+.role-dev{background:#ffe26a}.role-guru{background:#a0e7e5}.role-visit{background:#e9d5ff}
+
+/* rekap */
+.rekapGrid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;width:100%}
+@media(min-width:600px){.rekapGrid{grid-template-columns:1fr 1fr}}
+.rekapBox{width:100%;border:2.5px solid #2d1b4e;border-radius:14px;padding:14px 16px;background:#ffe26a;text-align:center}
+.rekapBox h4{margin:0 0 8px;display:flex;justify-content:center;align-items:center;gap:6px}
+#dashData{overflow:visible;padding-bottom:20px}
+
+/* panel admin */
+details.panel{margin-top:14px}
+details.panel>summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none}
+details.panel>summary::-webkit-details-marker{display:none}
+details.panel[open]>summary{margin-bottom:10px}
+.pBody .lbl{display:block;font-size:12px;font-weight:700;margin:10px 0 4px}
+.pBody .fInput{margin-bottom:2px}
+.hintP{font-size:11px;color:#6b5b8a;line-height:1.6;margin:6px 0}
+.rowSw{display:flex;align-items:flex-start;gap:12px}
+.switch{position:relative;display:inline-block;width:54px;height:30px;flex:none}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#ddd;border:2.5px solid #2d1b4e;border-radius:30px;cursor:pointer;transition:.2s}
+.slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#2d1b4e;border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:#b4f8c8}
+.switch input:checked+.slider:before{transform:translateX(24px)}
+.item{display:flex;justify-content:space-between;align-items:center;gap:8px;border:2.5px solid #2d1b4e;border-radius:12px;padding:10px;margin-bottom:8px;background:#fffdf5;font-size:12px;line-height:1.5}
+.item small{color:#6b5b8a}
+.item .btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.item .btn{padding:6px 10px;font-size:11px}
+
+footer{margin-top:24px;background:#fff;border-top:3px solid #2d1b4e;padding:18px 12px;text-align:center;font-size:12px;font-weight:700}
+
+/* ===== SKELETON ===== */
+.wrap{position:relative}
+
+.sk,
+html.boot-sess footer{
+  background-color:#ece6dc!important;
+  background-image:linear-gradient(90deg,#ece6dc 25%,#faf6ef 50%,#ece6dc 75%)!important;
+  background-size:200% 100%!important;
+  animation:skMove 1.3s linear infinite;
+  color:transparent!important;
+  border-color:#d9d0c1!important;
+  box-shadow:none!important;
+  pointer-events:none;
+  user-select:none;
+}
+.sk>*,html.boot-sess footer>*{visibility:hidden}
+@keyframes skMove{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){.sk,html.boot-sess footer,html.boot-login .loginBox>*{animation:none}}
+
+/* --- skeleton seluruh halaman: HANYA saat sudah login --- */
+#pageSk{display:none;position:absolute;top:12px;left:12px;right:12px;z-index:60;transition:opacity .35s ease}
+html.boot-sess #pageSk{display:block}
+html.boot-sess .wrap>*:not(#pageSk){visibility:hidden}
+#pageSk.out{display:block;opacity:0;pointer-events:none}
+
+.psk-top{height:44px;border-radius:14px;margin-bottom:10px}
+.psk-head{height:78px;border-radius:20px;margin-bottom:14px}
+.psk-statcard{height:190px;border-radius:20px;margin-bottom:14px}
+.psk-panel{height:54px;border-radius:20px;margin-bottom:14px}
+.psk-data{margin-top:16px}
+.psk-title{height:24px;width:45%;border-radius:8px;margin-bottom:14px}
+.psk-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.psk-grid .full{grid-column:1/-1}
+.psk-in{height:46px;border-radius:12px}
+.psk-row{height:52px;border-radius:12px;margin-bottom:10px}
+.sk-row{height:46px;border-radius:12px}
+.sk-item{height:62px;border-radius:12px;margin-bottom:8px}
+p.sk,span.sk{display:inline-block;min-width:120px;min-height:14px;border-radius:6px}
+
+/* --- belum login: loginModal tampil langsung, isinya skeleton --- */
+html.boot-login #loginModal{display:grid}
+html.boot-login .stickyNav{opacity:0;pointer-events:none;transform:translateY(-100%);visibility:hidden}
+html.boot-login .loginBox>*:not(#eLogin){
+  background-color:#ece6dc!important;
+  background-image:linear-gradient(90deg,#ece6dc 25%,#faf6ef 50%,#ece6dc 75%)!important;
+  background-size:200% 100%!important;
+  animation:skMove 1.3s linear infinite;
+  color:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  pointer-events:none;
+  user-select:none;
+  border-radius:10px;
+}
+html.boot-login .loginBox>*::placeholder{color:transparent}
+html.boot-login .loginBox h3{width:45%;height:24px;margin-bottom:14px}
+
+
+/* ===== kunci scroll selama skeleton ===== */
+html.boot-sess,html.boot-login,html.skl,
+html.boot-sess body,html.boot-login body,html.skl body{
+  overflow:hidden!important;
+  overscroll-behavior:none;
+  touch-action:none;
+}
+
+/* ===== kolom password + ikon mata ===== */
+.passWrap{position:relative;margin-bottom:8px}
+.passWrap input{margin-bottom:0;padding-right:48px}
+.eyeBtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:38px;height:38px;padding:0;border:0;border-radius:10px;background:transparent;color:#2d1b4e;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:none}
+.eyeBtn:hover{background:#f3ecff}
+.eyeBtn:active{transform:translateY(-50%) scale(.92)}
+html.boot-login .passWrap>*{visibility:hidden}
+
+
+/* ===== banner info server ===== */
+.srvWrap{display:flex;flex-direction:column;gap:8px;margin:12px 0 0}
+.srvWrap:empty{display:none}
+.srvItem{display:flex;align-items:flex-start;gap:10px;border:3px solid #2d1b4e;border-radius:16px;padding:10px 12px;box-shadow:3px 3px 0 #2d1b4e;font-size:13px;line-height:1.5;background:#fff;color:#2d1b4e}
+.srvItem .ic{font-size:20px;line-height:1.2}
+.srvItem .tx{flex:1;font-weight:700}
+.srvItem small{display:block;font-weight:500;font-size:11px;opacity:.85}
+.srvItem .x{border:0;background:transparent;font-size:18px;cursor:pointer;color:inherit;padding:0 4px;line-height:1}
+.srv-info{background:#a0e7e5}
+.srv-maintenance{background:#ffda77}
+.srv-masalah{background:#ff9a9e}
+.srv-penuh{background:#ffb3c6}
+.srv-lainnya{background:#e9d5ff}
+.srv-offline{background:#d1d5db}
+
+.loginInfo{margin-bottom:10px}
+.loginInfo:empty{display:none}
+.loginInfoItem{font-size:12px;font-weight:700;line-height:1.5;background:#ffda77;border:2.5px solid #2d1b4e;border-radius:12px;padding:8px 10px;margin-bottom:6px}
+
+.loginRowGagal td{background:#ffe5e5!important}
+.lokasiTxt{font-size:11px;color:#6b5b8a}
+.uaToggle{font-size:11px;color:#2563eb;cursor:pointer;text-decoration:underline;background:none;border:0;padding:0}

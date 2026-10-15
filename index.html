@@ -7,16 +7,16 @@
 <meta name="title" content="Dashboard Guru - SMA Negeri 2 Bonai Darussalam">
 
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://dashboard-guru-ac.vercel.app/">
+<meta property="og:url" content="https://dd-ace.vercel.app/">
 <meta property="og:title" content="Dashboard Guru - SMA Negeri 2 Bonai Darussalam">
 <meta property="og:description" content="Dashboard Guru • Data Absensi Realtime, Filter Mapel & Guru, Download Excel">
-<meta property="og:image" content="https://dashboard-guru-ac.vercel.app/og-guru.png?v=1">
+<meta property="og:image" content="https://dd-ace.vercel.app/og-guru.png?v=1">
 
 <meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="https://dashboard-guru-ac.vercel.app/">
+<meta property="twitter:url" content="https://dd-ace.vercel.app/">
 <meta property="twitter:title" content="Dashboard Guru - SMA Negeri 2 Bonai Darussalam">
 <meta property="twitter:description" content="Dashboard Guru • Data Absensi Realtime, Filter Mapel & Guru, Download Excel">
-<meta property="twitter:image" content="https://dashboard-guru-ac.vercel.app/og-guru.png?v=1">
+<meta property="twitter:image" content="https://dd-ace.vercel.app/og-guru.png?v=1">
 
 <link rel="icon" type="image/png" href="./images/favicon-96x96.png" sizes="96x96" />
 <link rel="icon" type="image/svg+xml" href="./images/favicon.svg" />
@@ -27,7 +27,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/exceljs@4.3.0/dist/exceljs.min.js"></script>
-<link rel="stylesheet" href="./style.css" type="text/css" media="all" />
+<link rel="stylesheet" href="./css/style.css" type="text/css" media="all" />
 <script>
 (function(){
   var h=document.documentElement,tok=false;
@@ -94,9 +94,25 @@
     <div class="pBody">
       <div class="rowSw">
         <label class="switch"><input type="checkbox" id="swSekali"><span class="slider"></span></label>
-        <div><b>Absen sekali untuk semua mapel: <span id="swLabel">OFF</span></b>
+        <div><b>Absen sekali untuk semua mapel hari ini: <span id="swLabel">OFF</span></b>
         <p class="hintP"><b>ON</b>: siswa cukup scan dan memilih status satu kali, lalu semua mapel hari itu otomatis tercatat.<br><b>OFF</b>: siswa absen satu per satu sesuai mapel.</p></div>
       </div>
+    </div>
+  </details>
+  
+    <details class="card panel" id="pnlAlfa">
+    <summary>⏰ Jadwal Absensi & Alfa Otomatis</summary>
+    <div class="pBody">
+      <label class="lbl">Jam absensi mulai dibuka</label>
+      <input type="time" id="jamBuka" class="fInput">
+      <div class="rowSw" style="margin-top:10px">
+        <label class="switch"><input type="checkbox" id="swAlfa"><span class="slider"></span></label>
+        <div><b>Alfa otomatis: <span id="swAlfaLabel">ON</span></b>
+        <p class="hintP">Jika ON, siswa yang tidak absen akan otomatis dicatat Alfa pada jam tutup di bawah, dan absensi berhenti menerima scan setelah jam itu.</p></div>
+      </div>
+      <label class="lbl">Jam tutup / alfa diproses</label>
+      <input type="time" id="jamAlfa" class="fInput">
+      <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnSimpanAlfa">💾 Simpan</button>
     </div>
   </details>
 
@@ -139,18 +155,20 @@
         </div>
         <label class="lbl">Tindakan</label>
         <select id="rAksi" class="fInput">
-          <option value="hp">Reset di HP (siswa bisa scan di HP baru)</option>
+          <option value="hp">Reset ikatan HP (siswa bisa scan di HP baru)</option>
           <option value="kode">Ganti kode QR (kartu lama mati, cetak ulang)</option>
         </select>
         <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnResetSiswa">🔄 Reset QR Siswa</button>
       </div>
 
       <div id="rWewenang" class="hidden">
-        <p class="hintP">Terbitkan ulang membuat QR lama langsung tidak berlaku. (laporkan ke developer untuk mencetak kartu)</p>
+        <p class="hintP">Terbitkan ulang membuat QR lama langsung tidak berlaku. Cetak kartu baru lewat cetak.html.</p>
         <div id="listPetugas" class="hintP">Memuat...</div>
       </div>
-    </div>
-  </details>
+          <hr style="border:0;border-top:2px dashed #e9e5f5;margin:14px 0">
+      <a class="btn btn-yellow" style="width:100%;display:block;text-align:center;text-decoration:none" href="./html/cetak.html">🖨️ Cetak Kartu QR Siswa</a>
+      </div>
+    </details>
     <details class="card panel onlyDev hidden" id="pnlInfo">
     <summary>📢 Info Server (developer)</summary>
     <div class="pBody">
@@ -241,11 +259,22 @@
 
 <button class="btn btn-red onlyEditor hidden" style="width:100%;margin-top:10px" onclick="hapusSemua()">Hapus Data Terfilter</button>
 </div>
+
+<div class="card" id="rekapKelasCard" style="margin-top:16px">
+  <h3 style="margin:0 0 10px">📊 Rekap Per Siswa (Gabungan Semua Mapel)</h3>
+  <p class="hintP">Satu siswa = satu baris, diambil dari status mapel terakhir hari itu. Kalau mapel terakhirnya Alfa tapi ada mapel lain yang bukan Alfa, status ikut mapel itu.</p>
+  <div class="filterGrid" style="grid-template-columns:1fr 1fr">
+    <select id="rkKelas" class="fInput"><option value="">-- Pilih Kelas --</option><option value="X E">X E</option><option value="XI F">XI F</option><option value="XII MIPA">XII MIPA</option></select>
+    <input type="date" id="rkTanggal" class="fInput">
+  </div>
+  <button class="btn btn-black" style="width:100%;margin-top:8px" id="btnRekapKelas">🔍 Tampilkan Rekap</button>
+  <div class="tableWrap" style="margin-top:10px">
+    <table><thead><tr><th>NAMA</th><th>KELAS</th><th>STATUS</th><th>KETERANGAN</th><th>AKSI</th></tr></thead><tbody id="tblRekapKelas"></tbody></table>
+  </div>
+</div>
 </div>
 
-<footer>Dashboard Guru • © <script>document.write(new Date().getFullYear())</script> • Made with 🖤 by ACE (ArilCode Engineer) <br><span class="contact">
-  <a href="mailto: arilhidayat202@gmail.com">arilhidayat202@gmail.com</a>
-</span></footer>
+<footer>Dashboard Guru • © <script>document.write(new Date().getFullYear())</script> • Made with 🖤 by ACE (ArilCode Engineer)</footer>
 
 <div id="loginModal">
   <div class="loginBox">
@@ -260,7 +289,7 @@
 </div><div id="eLogin" style="font-size:12px;color:#fff;background:#ff5a5f;border:2px solid #2d1b4e;border-radius:10px;padding:8px 10px;display:none;margin-bottom:8px;font-weight:700"></div><button class="btn btn-yellow" style="width:100%" onclick="login()">Masuk</button><button class="btn" style="width:100%;margin-top:8px" onclick="closeL()">Batal</button></div></div>
 <div id="toast"></div>
 
-<script src="./main.js" type="text/javascript" charset="utf-8"></script>
+<script src="./js/main.js" type="text/javascript" charset="utf-8"></script>
 <script>
 if(typeof supabase==="undefined"){
   document.documentElement.classList.remove("boot-sess","boot-login");
@@ -269,5 +298,26 @@ if(typeof supabase==="undefined"){
   if(bn0)bn0.innerHTML='<div class="srvItem srv-masalah"><span class="ic">⚠️</span><div class="tx"><b>Gagal memuat komponen dashboard</b><small>Periksa koneksi internet lalu muat ulang halaman. Bisa juga server pustaka sedang bermasalah.</small></div></div>';
 }
 </script>
+
+<link rel="stylesheet" href="./css/bot.css">
+<script>
+window.BOT_CONFIG={
+  id:"dashboard", nama:"Rekapina 🧮🕵️‍♀️", avatar:"🕵️‍♀️",
+  sapa:"Halo, aku Rekapina, detektif data absensi! 🔍 Mau tanya seputar dashboard?",
+  gakTau:"Hmm, Rekapina belum nemu petunjuknya 🧐 Coba tanya soal rekap, Excel, reset QR, atau pengaturan.",
+  faq:[
+    {kw:["guna dashboard","fungsi dashboard","dashboard ini buat apa"],jawab:"Di sini guru & developer bisa lihat data absensi, rekap kehadiran, atur jadwal alfa, bikin libur manual, reset QR, dan download Excel 📊"},
+    {kw:["cara download excel","download excel","unduh excel"],jawab:"Klik \"Tampilkan\" dulu di filter data, baru tombol \"📊 Download Excel\" bisa dipakai."},
+    {kw:["data tidak muncul","kenapa kosong","tidak tampil datanya"],jawab:"Jangan lupa klik \"🔍 Tampilkan\" dulu setelah pilih filter!"},
+    {kw:["absen sekali","apa itu absen sekali","mode sekali"],jawab:"Kalau \"Absen Sekali\" ON, siswa cukup scan 1x dan semua mapel hari itu otomatis tercatat. Kalau OFF, siswa pilih mapel satu per satu."},
+    {kw:["cara reset qr","reset qr","qr error","qr rusak"],jawab:"Buka panel \"🔄 Reset QR\", pilih jenis QR (siswa/wewenang), lalu pilih tindakannya."},
+    {kw:["cara buat libur","libur manual","input libur"],jawab:"Buka panel \"🏖️ Libur Manual\", isi tanggal & alasan, klik \"Kirim Libur\". Otomatis hilang setelah lewat."},
+    {kw:["siapa bisa hapus data","boleh hapus","akses hapus"],jawab:"Guru & developer bisa hapus data. Visit cuma bisa lihat & download Excel."},
+    {kw:["rekap kelas","absen kelas","per siswa"],jawab:"Buka \"📊 Rekap Per Siswa\", pilih kelas & tanggal, tiap siswa dapat 1 status gabungan dari semua mapel hari itu."},
+    {kw:["kamu siapa","siapa kamu","nama kamu"],jawab:"Aku Rekapina! 🧮🕵️‍♀️ Detektif data yang suka ngintip rekap absensi."}
+  ]
+};
+</script>
+<script src="./js/bot.js"></script>
 </body>
 </html>

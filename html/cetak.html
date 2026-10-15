@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cetak Kartu QR Siswa</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px;font-family:system-ui,Arial,sans-serif;background:#f5f3ff;color:#201747}
+.bar{max-width:700px;margin:0 auto 16px;background:#fff;padding:16px;border-radius:16px;box-shadow:0 6px 20px #312e8118}
+.bar h2{margin:0 0 10px;font-size:18px}
+.bar label{display:block;font-size:12px;font-weight:700;margin:6px 0 4px}
+.bar input,.bar select,.bar button{width:100%;padding:12px;margin-bottom:8px;border-radius:10px;border:2px solid #e9e5f5;font-size:14px;background:#fff}
+.bar button{border:0;background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;font-weight:700;cursor:pointer}
+.bar button:disabled{opacity:.6;cursor:wait}
+.bar button.sec{background:#1e1b4b}
+.bar button.gr{background:linear-gradient(135deg,#059669,#0d9488)}
+.bar button.rd{background:linear-gradient(135deg,#b91c1c,#d97706)}
+.bar hr{border:0;border-top:2px dashed #e9e5f5;margin:14px 0}
+.bar small{display:block;color:#6b6685;font-size:11px;line-height:1.5;margin-bottom:8px}
+#msg{font-size:12px;color:#b91c1c;min-height:16px}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;max-width:960px;margin:auto}
+.kartu{break-inside:avoid;page-break-inside:avoid}
+.kartu canvas{width:100%;height:auto;display:block;border-radius:18px;box-shadow:0 8px 22px #312e8133}
+.dl{width:100%;margin-top:8px;padding:11px;border:0;border-radius:12px;background:#1e1b4b;color:#fff;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+@media print{
+  body{background:#fff;padding:0}
+  .noprint,.dl{display:none!important}
+  #grid{grid-template-columns:repeat(3,1fr);gap:8px;max-width:none}
+  .kartu canvas{box-shadow:none;border-radius:0}
+}
+</style>
+<link rel="stylesheet" href="./skeleton.css">
+</head>
+<body>
+<div class="bar noprint">
+  <h2>🖨️ Kartu QR Siswa</h2>
+  <input id="pin" type="password" placeholder="PIN admin" inputmode="numeric">
+  <button id="muat">🔓 Muat Data</button>
+
+  <label>Kelas</label>
+  <select id="fKelas"><option value="">Semua Kelas</option><option>X E</option><option>XI F</option><option>XII MIPA</option></select>
+
+  <label>Nama (dari database)</label>
+  <select id="fNama"><option value="">Semua nama</option></select>
+
+  <label>Style kartu</label>
+  <select id="fStyle"></select>
+
+  <button class="sec" id="cetak">🖨️ Cetak / Simpan PDF</button>
+
+  <hr>
+  <b>👨‍🏫 QR Guru (hanya tampilan)</b>
+  <small>QR ini tidak disimpan di database. Kalau di-scan di absensi, hanya muncul tulisan "kamu seorang guru😁🙏🏻".</small>
+  <input id="namaGuru" placeholder="Nama guru (opsional, hanya tertulis di kartu)">
+  <button class="gr" id="btnGuru">👨‍🏫 Buat QR Guru</button>
+
+  <hr>
+  <b>🛡️ QR Wewenang (absen orang lain)</b>
+<small>QR ini bisa mengabsenkan siswa lain di halaman absensi. Tidak terikat HP: siapa pun yang memegang QR-nya bisa memakainya. Rahasia ada di dalam QR, jadi ID yang terlihat tidak bisa dipakai membuat kartu tiruan. Butuh PIN admin untuk membuat.</small>
+  <input id="wLabel" placeholder="Nama wewenang, contoh: WALI KELAS XII" maxlength="60">
+  <input id="wPang" placeholder="Teks tengah QR (maks 8 huruf, opsional)" maxlength="8">
+  <button class="rd" id="btnW">🛡️ Buat QR Wewenang</button>
+  <button class="sec" id="btnWDaftar">📋 Tampilkan QR Wewenang yang ada</button>
+
+  <div id="msg"></div>
+</div>
+<div id="grid"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="./kartu.js"></script>
+<script>
+const SUPABASE_URL = "https://wwiovsfkmymwkvxaehkh.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind3aW92c2ZrbXltd2t2eGFlaGtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEzNTE0MjEsImV4cCI6MjEwNjkyNzQyMX0.gEo2azUF1x3gwVG7h8NCDop_ZdjUl41viisIWcK8eI4";
+const $=id=>document.getElementById(id);
+const KODE_GURU="ACE-GURU";
+const IKON_DL='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>';
+let data=[],guruKartu=null,khususList=[],PIN_MEM="";
+
+async function rpc(fn,body){
+  const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"apikey":SUPABASE_KEY,"Authorization":`Bearer ${SUPABASE_KEY}`,"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j=await res.json().catch(()=>null);
+  if(!res.ok)throw new Error((j&&j.message)||"Gagal");
+  return j;
+}
+function pesan(teks,ok){$("msg").style.color=ok?"#166534":"#b91c1c";$("msg").textContent=teks;}
+
+// pilihan style (dikelompokkan, tanpa tema wewenang)
+(function(){
+  const grup={};
+  THEMES.filter(t=>t.id!=="wewenang").forEach(t=>{(grup[t.g]=grup[t.g]||[]).push(t);});
+  Object.keys(grup).forEach(g=>{
+    const og=document.createElement("optgroup");og.label=g;
+    grup[g].forEach(t=>{const o=document.createElement("option");o.value=t.id;o.textContent=t.n;og.appendChild(o);});
+    $("fStyle").appendChild(og);
+  });
+})();
+
+function isiNama(){
+  const k=$("fKelas").value;
+  $("fNama").innerHTML='<option value="">Semua nama</option>';
+  data.filter(s=>!k||s.kelas===k).forEach(s=>{
+    const o=document.createElement("option");
+    o.value=s.kode;o.textContent=`${s.nama} (${s.kelas})`;
+    $("fNama").appendChild(o);
+  });
+}
+
+function tambah(s,st){
+  const box=document.createElement("div");box.className="kartu";
+  const cv=gambarKartu(s,st);
+  box.appendChild(cv);
+  const b=document.createElement("button");b.className="dl";b.innerHTML=IKON_DL+" Unduh";
+  b.addEventListener("click",()=>unduhKartu(cv,s,st));
+  box.appendChild(b);
+  $("grid").appendChild(box);
+}
+
+function skeletonGrid(n){
+  const g=$("grid");g.innerHTML="";
+  for(let i=0;i<n;i++){
+    const d=document.createElement("div");d.className="kartu";
+    d.innerHTML='<div class="sk sk-card"></div><div class="sk sk-btn"></div>';
+    g.appendChild(d);
+  }
+}
+
+let renderId=0;
+function render(){
+  const my=++renderId;
+  const k=$("fKelas").value,kd=$("fNama").value,st=$("fStyle").value;
+  const list=[];
+  khususList.forEach(s=>list.push({s,st:"wewenang"}));
+  if(guruKartu)list.push({s:guruKartu,st});
+  data.filter(s=>(!k||s.kelas===k)&&(!kd||s.kode===kd)).forEach(s=>list.push({s,st}));
+  if(list.length===0){$("grid").innerHTML="";return;}
+
+  skeletonGrid(Math.min(list.length,6));
+  let i=0;
+  function langkah(){
+    if(my!==renderId)return;
+    if(i===0)$("grid").innerHTML="";
+    const akhir=Math.min(i+4,list.length);
+    for(;i<akhir;i++)tambah(list[i].s,list[i].st);
+    if(i<list.length)requestAnimationFrame(langkah);
+  }
+  setTimeout(langkah,60);
+}
+
+$("muat").addEventListener("click",async()=>{
+  pesan("Memuat...",true);$("msg").style.color="#6b6685";
+  $("muat").disabled=true;
+  $("fNama").classList.add("sk");
+  skeletonGrid(6);
+  try{
+    const j=await rpc("daftar_qr",{p_pin:$("pin").value});
+    data=j;
+    PIN_MEM=$("pin").value;
+    pesan(`✅ ${data.length} siswa dimuat`,true);
+    $("pin").value="";
+    isiNama();render();
+  }catch(e){
+    pesan("❌ PIN salah atau gagal memuat",false);
+    $("grid").innerHTML="";
+  }finally{
+    $("muat").disabled=false;
+    $("fNama").classList.remove("sk");
+  }
+});
+
+$("fKelas").addEventListener("change",()=>{isiNama();render();});
+$("fNama").addEventListener("change",render);
+$("fStyle").addEventListener("change",render);
+$("cetak").addEventListener("click",()=>window.print());
+
+$("btnGuru").addEventListener("click",()=>{
+  guruKartu={kode:KODE_GURU,nama:($("namaGuru").value.trim().toUpperCase()||"BAPAK / IBU GURU"),panggilan:"Guru",kelas:"GURU",label:"GURU"};
+  pesan("✅ Kartu QR Guru dibuat (tidak disimpan di database)",true);
+  render();
+});
+
+/* ===== QR Wewenang ===== */
+function keKartu(r){
+  const l=String(r.label||"");
+  return {kode:r.kode,nama:l.toUpperCase(),panggilan:r.panggilan||(l.split(" ")[0]||"Akses").slice(0,8),kelas:"WEWENANG",label:"AKSES KHUSUS"};
+}
+
+$("btnW").addEventListener("click",async()=>{
+  const pin=$("pin").value||PIN_MEM;
+  const label=$("wLabel").value.trim();
+  if(!pin){pesan("Isi PIN admin dulu",false);return;}
+  if(label.length<3){pesan("Nama wewenang minimal 3 huruf",false);return;}
+  $("btnW").disabled=true;
+  try{
+    const r=await rpc("buat_qr_khusus",{p_pin:pin,p_label:label,p_panggilan:$("wPang").value.trim()});
+    PIN_MEM=pin;
+    khususList.unshift(keKartu(r[0]));
+    $("wLabel").value="";$("wPang").value="";
+    pesan("✅ QR Wewenang dibuat. Unduh kartunya (paling atas).",true);
+    render();
+  }catch(e){pesan("❌ "+e.message,false);}
+  finally{$("btnW").disabled=false;}
+});
+
+$("btnWDaftar").addEventListener("click",async()=>{
+  const pin=$("pin").value||PIN_MEM;
+  if(!pin){pesan("Isi PIN admin dulu",false);return;}
+  $("btnWDaftar").disabled=true;
+  try{
+    const r=await rpc("daftar_qr_khusus",{p_pin:pin});
+    PIN_MEM=pin;
+    khususList=r.filter(x=>x.aktif).map(keKartu);
+    pesan(`✅ ${khususList.length} QR Wewenang aktif`,true);
+    render();
+  }catch(e){pesan("❌ "+e.message,false);}
+  finally{$("btnWDaftar").disabled=false;}
+});
+</script>
+</body>
+</html>
