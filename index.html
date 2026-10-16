@@ -88,136 +88,129 @@
 </div>
 
 <!-- PANEL ADMIN (hanya guru & developer) -->
-<div id="adminArea" class="hidden">
+<button id="btnGear" class="gearFab onlyEditor hidden" aria-label="Pengaturan">⚙️</button>
 
-  <details class="card panel" id="pnlSetting">
-    <summary>⚙️ Pengaturan Absensi</summary>
-    <div class="pBody">
-      <div class="rowSw">
-        <label class="switch"><input type="checkbox" id="swSekali"><span class="slider"></span></label>
-        <div><b>Absen sekali untuk semua mapel hari ini: <span id="swLabel">OFF</span></b>
-        <p class="hintP"><b>ON</b>: siswa cukup scan dan memilih status satu kali, lalu semua mapel hari itu otomatis tercatat.<br><b>OFF</b>: siswa absen satu per satu sesuai mapel.</p></div>
-      </div>
+<div id="gearModal" class="gearModal hidden">
+  <div class="gearBox">
+    <div class="gearHead"><b>⚙️ Pengaturan</b><button id="gearClose" class="botX">✕</button></div>
+    <div class="gearTabs">
+      <button class="gTab active" data-tab="absen">📋 Absensi</button>
+      <button class="gTab" data-tab="alfa">⏰ Jadwal</button>
+      <button class="gTab" data-tab="libur">🏖️ Libur</button>
+      <button class="gTab" data-tab="reset">🔄 Reset QR</button>
+      <button class="gTab onlyDev hidden" data-tab="info">📢 Info Server</button>
+      <button class="gTab onlyDev hidden" data-tab="login">🕵️ Login</button>
     </div>
-  </details>
-  
-    <details class="card panel" id="pnlAlfa">
-    <summary>⏰ Jadwal Absensi & Alfa Otomatis</summary>
-    <div class="pBody">
-      <label class="lbl">Jam absensi mulai dibuka</label>
-      <input type="time" id="jamBuka" class="fInput">
-      <div class="rowSw" style="margin-top:10px">
-        <label class="switch"><input type="checkbox" id="swAlfa"><span class="slider"></span></label>
-        <div><b>Alfa otomatis: <span id="swAlfaLabel">ON</span></b>
-        <p class="hintP">Jika ON, siswa yang tidak absen akan otomatis dicatat Alfa pada jam tutup di bawah, dan absensi berhenti menerima scan setelah jam itu.</p></div>
-      </div>
-      <label class="lbl">Jam tutup / alfa diproses</label>
-      <input type="time" id="jamAlfa" class="fInput">
-      <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnSimpanAlfa">💾 Simpan</button>
-    </div>
-  </details>
+    <div class="gearBody">
 
-  <details class="card panel" id="pnlLibur">
-    <summary>🏖️ Libur Manual</summary>
-    <div class="pBody">
-      <p class="hintP">Untuk sekolah yang diliburkan di hari biasa. Berlaku di tanggal yang dipilih, lalu otomatis hilang setelah lewat. Siswa melihat alasannya setelah scan.</p>
-      <label class="lbl">Tanggal mulai</label>
-      <input type="date" id="lMulai" class="fInput">
-      <label class="lbl">Tanggal selesai (kosongkan jika hanya 1 hari)</label>
-      <input type="date" id="lAkhir" class="fInput">
-      <label class="lbl">Alasan / keterangan libur</label>
-      <input id="lAlasan" class="fInput" maxlength="150" placeholder="contoh: Rapat guru / Cuti bersama">
-      <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnKirimLibur">📨 Kirim Libur</button>
-      <h4 style="margin:16px 0 6px">Libur nasional (otomatis)</h4>
-      <button class="btn" id="btnRefreshLiburNas" style="width:100%;margin-bottom:8px">🔄 Perbarui dari internet</button>
-      <div id="listLiburNas" class="hintP">Buka panel ini untuk memuat daftar.</div>
-      <h4 style="margin:16px 0 6px">Libur terjadwal</h4>
-      <div id="listLibur" class="hintP">Buka panel ini untuk memuat daftar.</div>
-    </div>
-  </details>
-
-  <details class="card panel" id="pnlReset">
-    <summary>🔄 Reset QR</summary>
-    <div class="pBody">
-      <label class="lbl">Jenis QR</label>
-      <select id="rJenis" class="fInput">
-        <option value="siswa">QR Siswa</option>
-        <option value="wewenang">QR Wewenang</option>
-      </select>
-
-      <div id="rSiswa">
-        <label class="lbl">Berdasarkan</label>
-        <select id="rBy" class="fInput"><option value="kelas">Kelas</option><option value="nama">Nama</option></select>
-        <label class="lbl">Kelas</label>
-        <select id="rKelas" class="fInput"><option value="SEMUA">Semua Kelas</option><option value="X E">X E</option><option value="XI F">XI F</option><option value="XII MIPA">XII MIPA</option></select>
-        <div id="rNamaWrap" class="hidden">
-          <label class="lbl">Nama siswa (🔒 = sudah terikat HP)</label>
-          <select id="rNama" class="fInput"></select>
+      <div class="tabPane active" data-pane="absen">
+        <div class="rowSw">
+          <label class="switch"><input type="checkbox" id="swSekali"><span class="slider"></span></label>
+          <div><b>Absen sekali untuk semua mapel hari ini: <span id="swLabel">OFF</span></b>
+          <p class="hintP"><b>ON</b>: siswa cukup scan dan memilih status satu kali, lalu semua mapel hari itu otomatis tercatat.<br><b>OFF</b>: siswa absen satu per satu sesuai mapel.</p></div>
         </div>
-        <label class="lbl">Tindakan</label>
-        <select id="rAksi" class="fInput">
-          <option value="hp">Reset ikatan HP (siswa bisa scan di HP baru)</option>
-          <option value="kode">Ganti kode QR (kartu lama mati, cetak ulang)</option>
+      </div>
+
+      <div class="tabPane" data-pane="alfa">
+        <label class="lbl">Jam absensi mulai dibuka</label>
+        <input type="time" id="jamBuka" class="fInput">
+        <div class="rowSw" style="margin-top:10px">
+          <label class="switch"><input type="checkbox" id="swAlfa"><span class="slider"></span></label>
+          <div><b>Alfa otomatis: <span id="swAlfaLabel">ON</span></b>
+          <p class="hintP">Jika ON, siswa yang tidak absen otomatis dicatat Alfa pada jam tutup, dan absensi berhenti menerima scan setelah jam itu.</p></div>
+        </div>
+        <label class="lbl">Jam tutup / alfa diproses</label>
+        <input type="time" id="jamAlfa" class="fInput">
+        <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnSimpanAlfa">💾 Simpan</button>
+      </div>
+
+      <div class="tabPane" data-pane="libur">
+        <p class="hintP">Untuk sekolah yang diliburkan di hari biasa. Berlaku di tanggal yang dipilih, lalu otomatis hilang setelah lewat.</p>
+        <label class="lbl">Tanggal mulai</label><input type="date" id="lMulai" class="fInput">
+        <label class="lbl">Tanggal selesai (kosongkan jika hanya 1 hari)</label><input type="date" id="lAkhir" class="fInput">
+        <label class="lbl">Alasan / keterangan libur</label><input id="lAlasan" class="fInput" maxlength="150" placeholder="contoh: Rapat guru / Cuti bersama">
+        <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnKirimLibur">📨 Kirim Libur</button>
+        <h4 style="margin:16px 0 6px">Libur nasional (otomatis)</h4>
+        <button class="btn" id="btnRefreshLiburNas" style="width:100%;margin-bottom:8px">🔄 Perbarui dari internet</button>
+        <div id="listLiburNas" class="hintP">Buka tab ini untuk memuat daftar.</div>
+        <h4 style="margin:16px 0 6px">Libur terjadwal</h4>
+        <div id="listLibur" class="hintP">Buka tab ini untuk memuat daftar.</div>
+      </div>
+
+      <div class="tabPane" data-pane="reset">
+        <label class="lbl">Jenis QR</label>
+        <select id="rJenis" class="fInput">
+          <option value="siswa">QR Siswa</option>
+          <option value="wewenang">QR Wewenang</option>
         </select>
-        <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnResetSiswa">🔄 Reset QR Siswa</button>
+        <div id="rSiswa">
+          <label class="lbl">Berdasarkan</label>
+          <select id="rBy" class="fInput"><option value="kelas">Kelas</option><option value="nama">Nama</option></select>
+          <label class="lbl">Kelas</label>
+          <select id="rKelas" class="fInput"><option value="SEMUA">Semua Kelas</option><option value="X E">X E</option><option value="XI F">XI F</option><option value="XII MIPA">XII MIPA</option></select>
+          <div id="rNamaWrap" class="hidden">
+            <label class="lbl">Nama siswa (🔒 = sudah terikat HP)</label>
+            <select id="rNama" class="fInput"></select>
+          </div>
+          <label class="lbl">Tindakan</label>
+          <select id="rAksi" class="fInput">
+            <option value="hp">Reset ikatan HP (siswa bisa scan di HP baru)</option>
+            <option value="kode">Ganti kode QR (kartu lama mati, cetak ulang)</option>
+          </select>
+          <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnResetSiswa">🔄 Reset QR Siswa</button>
+        </div>
+        <div id="rWewenang" class="hidden">
+          <p class="hintP">Terbitkan ulang membuat QR lama langsung tidak berlaku.</p>
+          <div id="listPetugas" class="hintP">Memuat...</div>
+        </div>
+        <hr style="border:0;border-top:2px dashed #e9e5f5;margin:14px 0">
+        <a class="btn btn-yellow" style="width:100%;display:block;text-align:center;text-decoration:none" href="./cetak.html">🖨️ Cetak Kartu QR Siswa</a>
       </div>
 
-      <div id="rWewenang" class="hidden">
-        <p class="hintP">Terbitkan ulang membuat QR lama langsung tidak berlaku. Cetak kartu baru lewat cetak.html.</p>
-        <div id="listPetugas" class="hintP">Memuat...</div>
+      <div class="tabPane" data-pane="info">
+        <p class="hintP">Pesan tampil di dashboard semua pengguna, termasuk layar login.</p>
+        <div id="dbUsage" class="hintP">Memuat pemakaian database...</div>
+        <label class="lbl">Jenis</label>
+        <select id="iJenis" class="fInput">
+          <option value="maintenance">🛠️ Maintenance</option>
+          <option value="masalah">⚠️ Server bermasalah</option>
+          <option value="penuh">💾 Data server penuh</option>
+          <option value="info">ℹ️ Informasi</option>
+          <option value="lainnya">📢 Pengumuman lain</option>
+        </select>
+        <label class="lbl">Pesan</label>
+        <textarea id="iPesan" class="fInput" rows="3" maxlength="300" placeholder="Tulis pesan untuk pengguna"></textarea>
+        <label class="lbl">Tampil selama</label>
+        <select id="iDurasi" class="fInput">
+          <option value="1">1 jam</option><option value="6">6 jam</option>
+          <option value="24" selected>24 jam</option><option value="72">3 hari</option>
+          <option value="168">7 hari</option><option value="0">Sampai saya matikan</option>
+        </select>
+        <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnKirimInfo">📨 Kirim Info</button>
+        <h4 style="margin:16px 0 6px">Pesan terkirim</h4>
+        <div id="listInfo" class="hintP">Buka tab ini untuk memuat daftar.</div>
       </div>
-          <hr style="border:0;border-top:2px dashed #e9e5f5;margin:14px 0">
-      <a class="btn btn-yellow" style="width:100%;display:block;text-align:center;text-decoration:none" href="./html/cetak.html">🖨️ Cetak Kartu QR Siswa</a>
+
+      <div class="tabPane" data-pane="login">
+        <p class="hintP">Password tidak pernah dicatat. IP hanya perkiraan lokasi kasar.</p>
+        <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+          <button class="btn" id="btnRefreshLogin" style="flex:1">🔄 Muat Ulang</button>
+          <button class="btn btn-red" id="btnHapusTerpilihLogin" style="flex:1">🗑️ Hapus Terpilih</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <button class="btn btn-red" id="btnBersihLogin" style="flex:1">🧹 Hapus &gt;30 Hari</button>
+          <button class="btn btn-red" id="btnHapusSemuaLogin" style="flex:1">🧨 Hapus Semua</button>
+        </div>
+        <div class="tableWrap" style="margin-top:0">
+          <table><thead><tr>
+            <th><input type="checkbox" id="ckAllLogin"></th>
+            <th>WAKTU</th><th>STATUS</th><th>EMAIL</th><th>PERANGKAT</th><th>BROWSER</th><th>IP</th><th>SESI</th><th>AKSI</th>
+          </tr></thead><tbody id="tblLogin"></tbody></table>
+        </div>
       </div>
-    </details>
-    <details class="card panel onlyDev hidden" id="pnlInfo">
-    <summary>📢 Info Server (developer)</summary>
-    <div class="pBody">
-      <p class="hintP">Pesan tampil di dashboard semua pengguna, termasuk layar login. Pakai untuk maintenance, server bermasalah, atau data penuh. Koneksi putus dan database hampir penuh terdeteksi otomatis, jadi tidak perlu ditulis manual.</p>
-      <div id="dbUsage" class="hintP">Memuat pemakaian database...</div>
 
-      <label class="lbl">Jenis</label>
-      <select id="iJenis" class="fInput">
-        <option value="maintenance">🛠️ Maintenance</option>
-        <option value="masalah">⚠️ Server bermasalah</option>
-        <option value="penuh">💾 Data server penuh</option>
-        <option value="info">ℹ️ Informasi</option>
-        <option value="lainnya">📢 Pengumuman lain</option>
-      </select>
-
-      <label class="lbl">Pesan</label>
-      <textarea id="iPesan" class="fInput" rows="3" maxlength="300" placeholder="Tulis pesan untuk pengguna"></textarea>
-
-      <label class="lbl">Tampil selama</label>
-      <select id="iDurasi" class="fInput">
-        <option value="1">1 jam</option>
-        <option value="6">6 jam</option>
-        <option value="24" selected>24 jam</option>
-        <option value="72">3 hari</option>
-        <option value="168">7 hari</option>
-        <option value="0">Sampai saya matikan</option>
-      </select>
-
-      <button class="btn btn-yellow" style="width:100%;margin-top:8px" id="btnKirimInfo">📨 Kirim Info</button>
-      <h4 style="margin:16px 0 6px">Pesan terkirim</h4>
-      <div id="listInfo" class="hintP">Buka panel ini untuk memuat daftar.</div>
     </div>
-  </details>
-    <details class="card panel onlyDev hidden" id="pnlLogin">
-    <summary>🕵️ Monitoring Login</summary>
-    <div class="pBody">
-      <p class="hintP">Tercatat setiap kali seseorang mencoba login di dashboard ini, berhasil atau gagal. Password tidak pernah dicatat atau disimpan di mana pun. IP hanya menunjukkan perkiraan lokasi kasar (kota/ISP), bukan alamat tepat.</p>
-      <div style="display:flex;gap:8px;margin-bottom:10px">
-        <button class="btn" id="btnRefreshLogin" style="flex:1">🔄 Muat Ulang</button>
-        <button class="btn btn-red" id="btnBersihLogin" style="flex:1">🧹 Hapus Lama (&gt;30 hari)</button>
-      </div>
-      <div class="tableWrap" style="margin-top:0">
-        <table><thead><tr>
-          <th>WAKTU</th><th>STATUS</th><th>EMAIL</th><th>PERANGKAT</th><th>BROWSER</th><th>IP</th><th>SESI</th><th>AKSI</th>
-        </tr></thead><tbody id="tblLogin"></tbody></table>
-      </div>
-    </div>
-  </details>
+  </div>
 </div>
 
 <!-- DATA -->
@@ -305,18 +298,17 @@ if(typeof supabase==="undefined"){
 <script>
 window.BOT_CONFIG={
   id:"dashboard", nama:"Rekapina 🧮🕵️‍♀️", avatar:"🕵️‍♀️",
-  sapa:"Halo, aku Rekapina, detektif data absensi! 🔍 Mau tanya seputar dashboard?",
-  gakTau:"Hmm, Rekapina belum nemu petunjuknya 🧐 Coba tanya soal rekap, Excel, reset QR, atau pengaturan.",
+  sapa:"Halo, aku Rekapina, detektif data absensi! 🔍 Pilih pertanyaanmu di bawah ya!",
   faq:[
-    {kw:["guna dashboard","fungsi dashboard","dashboard ini buat apa"],jawab:"Di sini guru & developer bisa lihat data absensi, rekap kehadiran, atur jadwal alfa, bikin libur manual, reset QR, dan download Excel 📊"},
-    {kw:["cara download excel","download excel","unduh excel"],jawab:"Klik \"Tampilkan\" dulu di filter data, baru tombol \"📊 Download Excel\" bisa dipakai."},
-    {kw:["data tidak muncul","kenapa kosong","tidak tampil datanya"],jawab:"Jangan lupa klik \"🔍 Tampilkan\" dulu setelah pilih filter!"},
-    {kw:["absen sekali","apa itu absen sekali","mode sekali"],jawab:"Kalau \"Absen Sekali\" ON, siswa cukup scan 1x dan semua mapel hari itu otomatis tercatat. Kalau OFF, siswa pilih mapel satu per satu."},
-    {kw:["cara reset qr","reset qr","qr error","qr rusak"],jawab:"Buka panel \"🔄 Reset QR\", pilih jenis QR (siswa/wewenang), lalu pilih tindakannya."},
-    {kw:["cara buat libur","libur manual","input libur"],jawab:"Buka panel \"🏖️ Libur Manual\", isi tanggal & alasan, klik \"Kirim Libur\". Otomatis hilang setelah lewat."},
-    {kw:["siapa bisa hapus data","boleh hapus","akses hapus"],jawab:"Guru & developer bisa hapus data. Visit cuma bisa lihat & download Excel."},
-    {kw:["rekap kelas","absen kelas","per siswa"],jawab:"Buka \"📊 Rekap Per Siswa\", pilih kelas & tanggal, tiap siswa dapat 1 status gabungan dari semua mapel hari itu."},
-    {kw:["kamu siapa","siapa kamu","nama kamu"],jawab:"Aku Rekapina! 🧮🕵️‍♀️ Detektif data yang suka ngintip rekap absensi."}
+    {q:"Apa fungsi dashboard ini?",jawab:"Di sini guru & developer bisa lihat data absensi, rekap kehadiran, atur jadwal alfa, bikin libur manual, reset QR, dan download Excel 📊"},
+    {q:"Bagaimana cara download Excel?",jawab:"Klik \"Tampilkan\" dulu di filter data, baru tombol \"📊 Download Excel\" bisa dipakai."},
+    {q:"Kenapa data tidak muncul?",jawab:"Jangan lupa klik \"🔍 Tampilkan\" dulu setelah pilih filter!"},
+    {q:"Apa itu Absen Sekali?",jawab:"Kalau \"Absen Sekali\" ON, siswa cukup scan 1x dan semua mapel hari itu otomatis tercatat. Kalau OFF, siswa pilih mapel satu per satu."},
+    {q:"Bagaimana cara reset QR?",jawab:"Buka ⚙️ Pengaturan → tab \"Reset QR\", pilih jenis QR (siswa/wewenang), lalu pilih tindakannya."},
+    {q:"Bagaimana cara buat libur manual?",jawab:"Buka ⚙️ Pengaturan → tab \"Libur\", isi tanggal & alasan, klik \"Kirim Libur\". Otomatis hilang setelah lewat."},
+    {q:"Siapa saja yang bisa hapus data?",jawab:"Guru & developer bisa hapus data. Visit cuma bisa lihat & download Excel."},
+    {q:"Apa itu Rekap Per Siswa?",jawab:"Itu rekap \"📊 Rekap Per Siswa\": pilih kelas & tanggal, tiap siswa dapat 1 status gabungan dari semua mapel hari itu."},
+    {q:"Kamu siapa?",jawab:"Aku Rekapina! 🧮🕵️‍♀️ Detektif data yang suka ngintip rekap absensi."}
   ]
 };
 </script>

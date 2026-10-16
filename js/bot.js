@@ -7,30 +7,28 @@
   <div id="botPanel" class="botPanel" style="display:none">
     <div class="botHead">${AVA} <b>${NAMA}</b><button id="botClose" class="botX">✕</button></div>
     <div id="botMsgs" class="botMsgs"></div>
-    <div class="botInputRow"><input id="botInput" placeholder="Tanya sesuatu..."><button id="botSend">➤</button></div>
+    <div id="botChips" class="botChips"></div>
   </div>`;
   document.body.appendChild(wrap);
   const $=s=>wrap.querySelector(s);
-  const bubble=$("#botBubble"),panel=$("#botPanel"),msgs=$("#botMsgs");
+  const bubble=$("#botBubble"),panel=$("#botPanel"),msgs=$("#botMsgs"),chips=$("#botChips");
 
   function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
   function tambahPesan(teks,dari){const d=document.createElement("div");d.className="botMsg "+(dari==="bot"?"botDari":"userDari");d.innerHTML=teks;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
   function tambahMikir(){const d=document.createElement("div");d.className="botMsg botDari";d.id="botMikirSedang";d.innerHTML='<span class="botMikir"><span></span><span></span><span></span></span>';msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
   function hapusMikir(){const m=$("#botMikirSedang");if(m)m.remove();}
 
-  function cariJawaban(q){
-    q=q.toLowerCase();let terbaik=null,skorT=0;
-    FAQ.forEach(item=>{let s=0;item.kw.forEach(k=>{if(q.includes(k))s+=k.length;});if(s>skorT){skorT=s;terbaik=item;}});
-    if(terbaik&&skorT>0)return typeof terbaik.jawab==="function"?terbaik.jawab():terbaik.jawab;
-    return CFG.gakTau||"Hmm, aku belum paham pertanyaan itu 😵‍💫";
-  }
-  function kirim(){
-    const v=$("#botInput").value.trim();if(!v)return;
-    tambahPesan(esc(v),"user");$("#botInput").value="";tambahMikir();
-    setTimeout(()=>{hapusMikir();tambahPesan(cariJawaban(v),"bot");},600+Math.random()*900);
-  }
-  $("#botSend").addEventListener("click",kirim);
-  $("#botInput").addEventListener("keydown",e=>{if(e.key==="Enter")kirim();});
+  chips.innerHTML=FAQ.map((f,i)=>`<button class="botChip" data-i="${i}">${esc(f.q||("Pertanyaan "+(i+1)))}</button>`).join("");
+  chips.addEventListener("click",e=>{
+    const b=e.target.closest(".botChip");if(!b)return;
+    const item=FAQ[Number(b.dataset.i)];if(!item)return;
+    tambahPesan(esc(item.q||"..."),"user");
+    tambahMikir();
+    setTimeout(()=>{
+      hapusMikir();
+      tambahPesan(typeof item.jawab==="function"?item.jawab():item.jawab,"bot");
+    },600+Math.random()*900);
+  });
 
   let dibukaDulu=false;
   bubble.addEventListener("click",()=>{

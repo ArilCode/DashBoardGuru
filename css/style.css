@@ -216,3 +216,24 @@ html.boot-login .passWrap>*{visibility:hidden}
 .contact a:hover {
   text-decoration: underline;
 }
+
+.gearFab{position:fixed;left:16px;bottom:16px;z-index:9998;width:56px;height:56px;border-radius:50%;background:#2d1b4e;color:#fff;font-size:26px;border:2.5px solid #2d1b4e;box-shadow:0 8px 20px #0004;cursor:pointer}
+.gearModal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9997;display:flex;align-items:flex-end;justify-content:center}
+.gearModal.hidden{display:none}
+.gearBox{background:#fff8ed;width:100%;max-width:640px;max-height:88vh;border-radius:20px 20px 0 0;display:flex;flex-direction:column;overflow:hidden;border:3px solid #2d1b4e;border-bottom:0}
+@media(min-width:700px){.gearModal{align-items:center;padding:20px}.gearBox{border-radius:20px;border-bottom:3px solid #2d1b4e;max-height:85vh}}
+.gearHead{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#2d1b4e;color:#fff;font-size:15px}
+.gearHead .botX{color:#fff;font-size:18px}
+.gearTabs{display:flex;gap:6px;overflow-x:auto;padding:10px 12px;border-bottom:2px solid #e9e5f5;background:#fff}
+.gTab{flex:none;padding:8px 12px;border-radius:14px;border:2px solid #2d1b4e;background:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.gTab.active{background:#ffe26a}
+.gearBody{padding:14px 16px;overflow-y:auto;flex:1}
+.tabPane{display:none}
+.tabPane.active{display:block}
+
+html.gearOpen,html.gearOpen body{overflow:hidden!important;touch-action:none;overscroll-behavior:none}
+.gearBody{touch-action:pan-y}
+.gearFab{transition:opacity .2s ease,transform .2s ease}
+.gearFab.gearHideWhileOpen{opacity:0;pointer-events:none;transform:scale(.4)}
+
+.gearTabs{-webkit-overflow-scrolling:touch}

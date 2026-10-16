@@ -98,6 +98,30 @@ function isiAwal(){
   tambahOpsi(selM,PAK,true);                      // PAK hanya tampil (abu-abu) saat tidak ada guru terpilih
   Object.keys(GURU_MAPEL).sort().forEach(g=>tambahOpsi(selG,g));
 }
+
+function gearSwitchTab(tab){
+  document.querySelectorAll(".gTab").forEach(b=>b.classList.toggle("active",b.dataset.tab===tab));
+  document.querySelectorAll(".tabPane").forEach(p=>p.classList.toggle("active",p.dataset.pane===tab));
+  if(tab==="libur"){muatLibur();muatLiburNasional();}
+  else if(tab==="reset")aturResetUI();
+  else if(tab==="info"){muatInfoList();muatStatusDb();isiPesanDefault();}
+  else if(tab==="login")muatLoginList();
+}
+
+document.querySelectorAll(".gTab").forEach(b=>b.addEventListener("click",()=>gearSwitchTab(b.dataset.tab)));
+function openGear(){
+  $("gearModal").classList.remove("hidden");
+  $("btnGear").classList.add("gearHideWhileOpen");
+  document.documentElement.classList.add("gearOpen");
+}
+function closeGear(){
+  $("gearModal").classList.add("hidden");
+  $("btnGear").classList.remove("gearHideWhileOpen");
+  document.documentElement.classList.remove("gearOpen");
+}
+$("btnGear").addEventListener("click",openGear);
+$("gearClose").addEventListener("click",closeGear);
+
 function onKelasChange(){isiAwal();hasShown=false;renderStats([]);render();$("infoFilter").textContent="Pilih filter lalu klik Tampilkan";}
 function onFilterTyping(){if(hasShown){$("infoFilter").textContent="Filter berubah, klik Tampilkan lagi";}}
 
@@ -116,7 +140,6 @@ function onDateChange(){const el=$("fTanggal"),w=$("dateWrap");w.classList.toggl
 function setAuthUI(isLogin,r="visit"){
   role=r;isDev=isLogin&&r==="developer";canEdit=isLogin&&(r==="guru"||r==="developer");
   $("dashData").classList.toggle("hidden",!isLogin);
-  $("adminArea").classList.toggle("hidden",!canEdit);
   $("btnLogin").classList.toggle("hidden",isLogin);
   $("btnLogout").classList.toggle("hidden",!isLogin);
   document.querySelectorAll(".onlyEditor").forEach(el=>el.classList.toggle("hidden",!canEdit));
@@ -172,9 +195,22 @@ $("btnEye").addEventListener("click",()=>{setLihatPass($("pass").type==="passwor
 
 /* ===== pengaman scroll (untuk browser lama yang mengabaikan overflow:hidden) ===== */
 function terkunci(){const c=document.documentElement.classList;return c.contains("skl")||c.contains("boot-sess")||c.contains("boot-login");}
-document.addEventListener("touchmove",e=>{if(terkunci())e.preventDefault();},{passive:false});
-document.addEventListener("wheel",e=>{if(terkunci())e.preventDefault();},{passive:false});
-supa.auth.onAuthStateChange(ev=>{if(ev==="SIGNED_OUT"&&currentEmail)bersihUI();});
+
+document.addEventListener("touchmove",e=>{
+  if(document.documentElement.classList.contains("gearOpen")){
+    if(e.target.closest(".gearBody,.gearTabs"))return;   // isi & baris tab tetap bisa digeser
+    e.preventDefault();return;
+  }
+  if(terkunci())e.preventDefault();
+},{passive:false});
+document.addEventListener("wheel",e=>{
+  if(document.documentElement.classList.contains("gearOpen")){
+    if(e.target.closest(".gearBody,.gearTabs"))return;
+    e.preventDefault();return;
+  }
+  if(terkunci())e.preventDefault();
+},{passive:false});
+
 
 /* ================= LOAD DATA (semua halaman, bukan hanya 1000) ================= */
 async function ambilSemua(){
@@ -193,7 +229,8 @@ async function ambilSemua(){
   }
   return {ok:true,rows};
 }
-async function load(keep=false,sk=!keep){
+
+async function load(keep=false,sk=!keep,quiet=false){
   if(sk)skeletonData(true);
   const h=await ambilSemua();
   if(sk)skeletonData(false);
@@ -202,7 +239,7 @@ async function load(keep=false,sk=!keep){
   const ada=new Set(all.map(x=>String(x.id)));
   [...selected].forEach(i=>{if(!ada.has(i))selected.delete(i);});
   if(keep&&hasShown){renderStats(getFiltered());render();}
-  else{hasShown=false;renderStats([]);render();toast(`📥 ${all.length} data siap, klik Tampilkan`);}
+  else{hasShown=false;renderStats([]);render();if(!quiet)toast(`📥 ${all.length} data siap, klik Tampilkan`);}
   return true;
 }
 
@@ -365,7 +402,11 @@ $("tbody").addEventListener("change",e=>{
   }
   const f=el.dataset.f;if(!f)return;
   const id=el.dataset.id;
-  if(f==="status")return ubah(id,{status:el.value},"✅ Status diubah");
+  if(f==="status"){
+  const obj={status:el.value};
+  if(el.value!=="Izin")obj.keterangan=null;
+  return ubah(id,obj,"✅ Status diubah");
+}
   if(!isDev)return toast("🔒 Hanya developer yang bisa mengubah ini");
   if(f==="mapel")return editMapel(id,el.value);
   if(f==="guru")return editGuru(id,el.value);
@@ -603,7 +644,6 @@ $("listLibur").addEventListener("click",async e=>{
   if(error)return toast("❌ "+error.message);
   toast("Libur dihapus");muatLibur();
 });
-$("pnlLibur").addEventListener("toggle",()=>{if($("pnlLibur").open){muatLibur();muatLiburNasional();}});
 
 /* ================= RESET QR ================= */
 let siswaCache=null;
@@ -635,7 +675,6 @@ function aturResetUI(){
 $("rJenis").addEventListener("change",aturResetUI);
 $("rBy").addEventListener("change",aturResetUI);
 $("rKelas").addEventListener("change",isiRNama);
-$("pnlReset").addEventListener("toggle",()=>{if($("pnlReset").open)aturResetUI();});
 
 $("btnResetSiswa").addEventListener("click",async()=>{
   const by=$("rBy").value,aksi=$("rAksi").value;
@@ -844,7 +883,6 @@ $("listInfo").addEventListener("click",async e=>{
     toast("Pesan dihapus");muatInfoList();cekServer();
   }
 });
-$("pnlInfo").addEventListener("toggle",()=>{if($("pnlInfo").open){muatInfoList();muatStatusDb();isiPesanDefault();}});
 
 /* ----- jalankan pengecekan berkala ----- */
 cekServer();
@@ -898,15 +936,18 @@ async function catatPercobaanLogin(email,status,alasan){
 
 function waktuID(ts){return new Date(ts).toLocaleString("id-ID",{timeZone:"Asia/Jakarta",dateStyle:"full",timeStyle:"medium"});}
 
+let loginSelected=new Set();
 async function muatLoginList(){
   const box=$("tblLogin");
-  box.innerHTML=`<tr><td colspan="8" style="border:0"><div class="sk sk-row"></div></td></tr>`.repeat(4);
+  loginSelected.clear();$("ckAllLogin").checked=false;
+  box.innerHTML=`<tr><td colspan="9" style="border:0"><div class="sk sk-row"></div></td></tr>`.repeat(4);
   const {data,error}=await supa.rpc("daftar_login",{p_limit:300});
-  if(error){box.innerHTML=`<tr><td colspan="8" style="border:0;color:#b91c1c">❌ ${escapeHtml(error.message)}</td></tr>`;return;}
-  if(!data||!data.length){box.innerHTML=`<tr><td colspan="8" style="border:0;color:#6b5b8a">Belum ada riwayat login.</td></tr>`;return;}
+  if(error){box.innerHTML=`<tr><td colspan="9" style="border:0;color:#b91c1c">❌ ${escapeHtml(error.message)}</td></tr>`;return;}
+  if(!data||!data.length){box.innerHTML=`<tr><td colspan="9" style="border:0;color:#6b5b8a">Belum ada riwayat login.</td></tr>`;return;}
   box.innerHTML=data.map(r=>{
     const gagal=r.status==="gagal";
     return `<tr class="${gagal?'loginRowGagal':''}">
+      <td><input type="checkbox" class="ckLogin" data-id="${r.id}"></td>
       <td>${waktuID(r.waktu)}</td>
       <td><span class="badge ${gagal?'Alfa':'Hadir'}">${gagal?'❌ GAGAL':'✅ SUKSES'}</span>${gagal&&r.alasan?`<br><small>${escapeHtml(r.alasan)}</small>`:""}</td>
       <td><span class="emailClik" data-email="${escapeHtml(r.email||'')}" data-st="0">${r.email?'********':'-'}</span></td>
@@ -918,6 +959,28 @@ async function muatLoginList(){
     </tr>`;
   }).join("");
 }
+$("ckAllLogin").addEventListener("change",e=>{
+  document.querySelectorAll(".ckLogin").forEach(c=>{c.checked=e.target.checked;if(e.target.checked)loginSelected.add(c.dataset.id);else loginSelected.delete(c.dataset.id);});
+});
+$("tblLogin").addEventListener("change",e=>{
+  const c=e.target.closest(".ckLogin");if(!c)return;
+  if(c.checked)loginSelected.add(c.dataset.id);else loginSelected.delete(c.dataset.id);
+});
+$("btnHapusTerpilihLogin").addEventListener("click",async()=>{
+  const ids=[...loginSelected].map(Number);
+  if(!ids.length)return toast("Belum ada yang dipilih");
+  if(!confirm(`Hapus ${ids.length} riwayat terpilih?`))return;
+  const {data,error}=await supa.rpc("hapus_login_banyak",{p_ids:ids});
+  if(error)return toast("❌ "+error.message);
+  toast(`🗑️ ${data} riwayat dihapus`);muatLoginList();
+});
+$("btnHapusSemuaLogin").addEventListener("click",async()=>{
+  if(!confirm("Hapus SEMUA riwayat login? Tidak bisa dibatalkan."))return;
+  const {data,error}=await supa.rpc("kosongkan_login_semua");
+  if(error)return toast("❌ "+error.message);
+  toast(`🧨 ${data} riwayat dihapus`);muatLoginList();
+});
+
 $("btnRefreshLogin").addEventListener("click",muatLoginList);
 $("btnBersihLogin").addEventListener("click",async()=>{
   if(!confirm("Hapus riwayat login yang lebih lama dari 30 hari?"))return;
@@ -954,7 +1017,6 @@ $("tblLogin").addEventListener("click",async e=>{
     }catch(err){out.textContent="Gagal memuat lokasi (coba lagi nanti)";}
   }
 });
-$("pnlLogin").addEventListener("toggle",()=>{if($("pnlLogin").open)muatLoginList();});
 
 function hariDariTanggal(iso){const d=new Date(iso+"T00:00:00");return HARI[d.getDay()];}
 function hitungRekapKelas(kelas,iso){
@@ -979,17 +1041,21 @@ function hitungRekapKelas(kelas,iso){
   hasil.sort((a,b)=>a.nama.localeCompare(b.nama));
   return hasil;
 }
+
 function renderRekapKelas(){
   const kelas=$("rkKelas").value,iso=$("rkTanggal").value,tbody=$("tblRekapKelas");
   if(!kelas||!iso){tbody.innerHTML=`<tr><td colspan="5" style="border:0;color:#6b5b8a">Pilih kelas & tanggal dulu.</td></tr>`;return;}
   const hasil=hitungRekapKelas(kelas,iso);
   if(!hasil.length){tbody.innerHTML=`<tr><td colspan="5" style="border:0;color:#6b5b8a">Belum ada data absensi di tanggal ini.</td></tr>`;return;}
+  const sudahLogin=!!currentEmail;
   tbody.innerHTML=hasil.map((r,i)=>{
     const det=r.detail.map(d=>`${escapeHtml(d.mapel||'-')}: ${normalStatus(d.status)}`).join(" • ");
-    return `<tr><td class="namaCell"><b>${escapeHtml(r.nama)}</b></td><td>${escapeHtml(r.kelas)}</td><td><span class="badge ${escapeHtml(r.status)}">${escapeHtml(r.status)}</span></td><td class="ketCell">${escapeHtml(r.keterangan)||'-'}</td><td><button class="btn" data-rkd="${i}" style="padding:6px 8px;font-size:11px">🔍 Detail</button></td></tr>
+    const ketCell=sudahLogin?(escapeHtml(r.keterangan)||'-'):'<span style="color:#9a8fb0">🔒 login untuk lihat</span>';
+    return `<tr><td class="namaCell"><b>${escapeHtml(r.nama)}</b></td><td>${escapeHtml(r.kelas)}</td><td><span class="badge ${escapeHtml(r.status)}">${escapeHtml(r.status)}</span></td><td class="ketCell">${ketCell}</td><td><button class="btn" data-rkd="${i}" style="padding:6px 8px;font-size:11px">🔍 Detail</button></td></tr>
     <tr class="hidden" id="rkd${i}"><td colspan="5" style="border:0;background:#faf8ff;font-size:11px;color:#6b5b8a">${det}</td></tr>`;
   }).join("");
 }
+
 $("btnRekapKelas").addEventListener("click",renderRekapKelas);
 $("tblRekapKelas").addEventListener("click",e=>{const b=e.target.closest("[data-rkd]");if(!b)return;$("rkd"+b.dataset.rkd).classList.toggle("hidden");});
 $("rkTanggal").value=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Jakarta"});
@@ -1001,10 +1067,15 @@ isiAwal();
   let masuk=false;
   try{
     const {data}=await supa.auth.getSession();
-    if(data.session){masuk=true;await mulaiSesi(data.session.user);}
-    else{setAuthUI(false);renderStats([]);render();}
+    if(data.session){
+      masuk=true;await mulaiSesi(data.session.user);
+    }else{
+      setAuthUI(false);
+      await load(false,false,true);   // tamu: muat data diam-diam supaya Rekap Per Siswa jalan
+    }
   }catch(e){
-    setAuthUI(false);renderStats([]);render();
+    setAuthUI(false);
+    await load(false,false,true);
   }finally{
     selesaiBoot(masuk);
   }
