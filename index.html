@@ -17,6 +17,8 @@
 <meta property="twitter:title" content="Dashboard Guru - SMA Negeri 2 Bonai Darussalam">
 <meta property="twitter:description" content="Dashboard Guru • Data Absensi Realtime, Filter Mapel & Guru, Download Excel">
 <meta property="twitter:image" content="https://dd-ace.vercel.app/og-guru.png?v=1">
+   <meta property="og:image:width" content="1200">
+   <meta property="og:image:height" content="630">
 
 <link rel="icon" type="image/png" href="./images/favicon-96x96.png" sizes="96x96" />
 <link rel="icon" type="image/svg+xml" href="./images/favicon.svg" />
@@ -297,8 +299,16 @@ if(typeof supabase==="undefined"){
 </script>
 <script>
 window.BOT_CONFIG={
-  id:"dashboard", nama:"Rekapina 🧮🕵️‍♀️", avatar:"🕵️‍♀️",
-  sapa:"Halo, aku Rekapina, detektif data absensi! 🔍 Pilih pertanyaanmu di bawah ya!",
+  id:"dashboard", nama:"Apina 🧮", perluLogin:true,
+  avatar:`<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="32" cy="34" r="22" fill="#7c3aed"/>
+    <circle cx="24" cy="30" r="5" fill="#fff"/><circle cx="40" cy="30" r="5" fill="#fff"/>
+    <circle cx="24" cy="31" r="2.4" fill="#201747"/><circle cx="40" cy="31" r="2.4" fill="#201747"/>
+    <path d="M24 42q8 6 16 0" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <circle cx="48" cy="44" r="7" fill="none" stroke="#ffe26a" stroke-width="3"/>
+    <line x1="53" y1="49" x2="59" y2="55" stroke="#ffe26a" stroke-width="3" stroke-linecap="round"/>
+  </svg>`,
+  sapa:"Halo, aku Apina, detektif data absensi! 🔍 Pilih pertanyaanmu di bawah ya!",
   faq:[
     {q:"Apa fungsi dashboard ini?",jawab:"Di sini guru & developer bisa lihat data absensi, rekap kehadiran, atur jadwal alfa, bikin libur manual, reset QR, dan download Excel 📊"},
     {q:"Bagaimana cara download Excel?",jawab:"Klik \"Tampilkan\" dulu di filter data, baru tombol \"📊 Download Excel\" bisa dipakai."},
@@ -308,7 +318,7 @@ window.BOT_CONFIG={
     {q:"Bagaimana cara buat libur manual?",jawab:"Buka ⚙️ Pengaturan → tab \"Libur\", isi tanggal & alasan, klik \"Kirim Libur\". Otomatis hilang setelah lewat."},
     {q:"Siapa saja yang bisa hapus data?",jawab:"Guru & developer bisa hapus data. Visit cuma bisa lihat & download Excel."},
     {q:"Apa itu Rekap Per Siswa?",jawab:"Itu rekap \"📊 Rekap Per Siswa\": pilih kelas & tanggal, tiap siswa dapat 1 status gabungan dari semua mapel hari itu."},
-    {q:"Kamu siapa?",jawab:"Aku Rekapina! 🧮🕵️‍♀️ Detektif data yang suka ngintip rekap absensi."}
+    {q:"Kamu siapa?",jawab:"Aku Apina! 🧮🕵️‍♀️ Detektif data yang suka ngintip rekap absensi."}
   ]
 };
 </script>

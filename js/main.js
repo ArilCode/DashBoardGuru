@@ -50,12 +50,13 @@ setTimeout(()=>selesaiBoot(),8000);   // pengaman: skeleton tidak boleh tersangk
 function skTabel(){
   return Array.from({length:6},()=>`<tr><td colspan="9" style="padding:6px;border:0;background:none"><div class="sk sk-row"></div></td></tr>`).join("");
 }
+
 function skeletonData(on){
-  document.documentElement.classList.toggle("skl",on);   // kunci scroll selama skeleton data
   document.querySelectorAll(".stat div").forEach(el=>el.classList.toggle("sk",on));
   $("infoFilter").classList.toggle("sk",on);
   if(on){$("tbody").innerHTML=skTabel();$("rekapArea").classList.add("hidden");}
 }
+
 function skList(el,n=2){el.innerHTML=Array.from({length:n},()=>'<div class="sk sk-item"></div>').join("");}
 
 /* ================= KONFIG MAPEL ================= */

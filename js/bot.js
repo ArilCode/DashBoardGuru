@@ -2,10 +2,10 @@
   const CFG=window.BOT_CONFIG||{};
   const NAMA=CFG.nama||"Bot",AVA=CFG.avatar||"🤖",SAPA=CFG.sapa||"Hai!",FAQ=CFG.faq||[];
   const KEY_POS="botpos_"+(CFG.id||"bot");
-  const wrap=document.createElement("div");wrap.id="botWrap";
-  wrap.innerHTML=`<div id="botBubble" class="botBubble" title="${NAMA}">${AVA}</div>
+  const wrap=document.createElement("div");wrap.id="botWrap";wrap.style.display="none";
+  wrap.innerHTML=`<div id="botBubble" class="botBubble" title="${NAMA}"><span class="botAva">${AVA}</span></div>
   <div id="botPanel" class="botPanel" style="display:none">
-    <div class="botHead">${AVA} <b>${NAMA}</b><button id="botClose" class="botX">✕</button></div>
+    <div class="botHead"><span class="botAvaSm">${AVA}</span><b>${NAMA}</b><button id="botClose" class="botX">✕</button></div>
     <div id="botMsgs" class="botMsgs"></div>
     <div id="botChips" class="botChips"></div>
   </div>`;
@@ -31,13 +31,30 @@
   });
 
   let dibukaDulu=false;
+  function setOpen(open){
+    panel.style.display=open?"flex":"none";
+    document.documentElement.classList.toggle("botOpen",open);
+    if(open&&!dibukaDulu){dibukaDulu=true;tambahPesan(SAPA,"bot");}
+  }
   bubble.addEventListener("click",()=>{
     if(bubble.dataset.drag==="1"){bubble.dataset.drag="0";return;}
-    panel.style.display=panel.style.display==="none"?"flex":"none";
-    if(!dibukaDulu&&panel.style.display==="flex"){dibukaDulu=true;tambahPesan(SAPA,"bot");}
+    setOpen(panel.style.display==="none");
   });
-  $("#botClose").addEventListener("click",()=>panel.style.display="none");
+  $("#botClose").addEventListener("click",()=>setOpen(false));
 
+  // kunci scroll halaman selagi panel bot terbuka, kecuali isi bot sendiri
+  document.addEventListener("touchmove",e=>{
+    if(!document.documentElement.classList.contains("botOpen"))return;
+    if(e.target.closest("#botMsgs,#botChips"))return;
+    e.preventDefault();
+  },{passive:false});
+  document.addEventListener("wheel",e=>{
+    if(!document.documentElement.classList.contains("botOpen"))return;
+    if(e.target.closest("#botMsgs,#botChips"))return;
+    e.preventDefault();
+  },{passive:false});
+
+  // geser bubble
   (function(){
     let sx,sy,ox,oy,moved=false;
     try{const p=JSON.parse(localStorage.getItem(KEY_POS));if(p){wrap.style.left=p.l+"px";wrap.style.top=p.t+"px";wrap.style.right="auto";wrap.style.bottom="auto";}}catch(e){}
@@ -53,4 +70,22 @@
       if(moved){bubble.dataset.drag="1";const r=wrap.getBoundingClientRect();try{localStorage.setItem(KEY_POS,JSON.stringify({l:r.left,t:r.top}));}catch(e){}}}
     bubble.addEventListener("mousedown",mulai);bubble.addEventListener("touchstart",mulai,{passive:true});
   })();
+
+  // tampil hanya setelah skeleton halaman selesai, dan (jika diminta) setelah login
+  function skeletonSelesai(){
+    const h=document.documentElement;
+    return !h.classList.contains("boot-sess")&&!h.classList.contains("boot-login")&&!h.classList.contains("skl");
+  }
+  function loginOk(){
+    if(!CFG.perluLogin)return true;
+    try{return typeof currentEmail!=="undefined"&&!!currentEmail;}catch(e){return false;}
+  }
+  let tampil=false;
+  function cekTampil(){
+    const siap=skeletonSelesai()&&loginOk();
+    if(siap&&!tampil){tampil=true;wrap.style.display="";}
+    else if(!siap&&tampil){tampil=false;wrap.style.display="none";setOpen(false);}
+  }
+  cekTampil();
+  setInterval(cekTampil,400);
 })();

@@ -236,4 +236,18 @@ html.gearOpen,html.gearOpen body{overflow:hidden!important;touch-action:none;ove
 .gearFab{transition:opacity .2s ease,transform .2s ease}
 .gearFab.gearHideWhileOpen{opacity:0;pointer-events:none;transform:scale(.4)}
 
-.gearTabs{-webkit-overflow-scrolling:touch}
+.gearTabs {
+  -webkit-overflow-scrolling: touch;
+  flex-wrap: nowrap;
+}
+
+.gearBox{overflow-x:hidden}
+.gTab{white-space:nowrap;flex-shrink:0}
+.tabPane,.gearBody,.pBody,.rowSw,.item{min-width:0;box-sizing:border-box}
+.tabPane{width:100%}
+input[type="date"].fInput{min-width:0;width:100%;box-sizing:border-box}
+.tabPane[data-pane="libur"]{overflow-x:hidden}
+.rowSw>div{min-width:0}
+
+html.gearOpen #botWrap{display:none!important}
+html.botOpen .gearFab{display:none!important}
