@@ -103,7 +103,7 @@ function pola(ctx,W,H,th){
     ctx.globalAlpha=.08;ctx.beginPath();ctx.arc(70,320,90,0,7);ctx.fill();
   }else if(p==="dots"){
     ctx.globalAlpha=.16;
-    for(let y=20;y<H;y+=36)for(let x=((y/36)%2)*18+10;x<W;x+=36){ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();}
+    for(let ro=0,y=20;y<H;y+=36,ro++)for(let x=(ro%2)*18+10;x<W;x+=36){ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill();}
   }else if(p==="lines"){
     ctx.globalAlpha=.1;ctx.lineWidth=14;
     for(let i=-H;i<W+H;i+=48){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i+H,H);ctx.stroke();}
@@ -332,9 +332,14 @@ function bacaMeta(buf){
 
 function unduhKartu(cv,s,id){
   cv.toBlob(async bl=>{
-    const buf=new Uint8Array(await bl.arrayBuffer());
-    const out=sisipMeta(buf,{kode:s.kode,nama:s.nama,panggilan:s.panggilan,kelas:s.kelas,tema:id});
-    const url=URL.createObjectURL(new Blob([out],{type:"image/png"}));
+    if(!bl){alert("Gagal membuat gambar kartu");return;}
+    let hasil=bl;
+    try{
+      const buf=new Uint8Array(await bl.arrayBuffer());
+      const out=sisipMeta(buf,{kode:s.kode,nama:s.nama,panggilan:s.panggilan,kelas:s.kelas,tema:id});
+      hasil=new Blob([out],{type:"image/png"});
+    }catch(e){/* kalau metadata gagal, tetap unduh PNG biasa */}
+    const url=URL.createObjectURL(hasil);
     const a=document.createElement("a");
     a.href=url;
     a.download=("QR_"+s.kelas+"_"+s.nama+"_"+id).replace(/[^\w\-]+/g,"_")+".png";
